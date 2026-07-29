@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Prototype Game — Bad Wizard Games</title>
+
+  <meta
+    name="description"
+    content="Explore a prototype game currently in development at Bad Wizard Games."
+  >
+
+  <meta name="color-scheme" content="dark light">
+  <meta name="theme-color" content="#0f1117">
+
+  <link href="assets/logo.png" rel="icon" sizes="any">
+
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    :root {
+      --bg: #0f1117;
+      --bg-soft: #141821;
+      --panel: #151925;
+      --panel-2: #10131b;
+      --text: #e7e8ea;
+      --muted: #a7adbb;
+      --brand: #ffb84d;
+      --brand-2: #8e6bff;
+      --brand-3: #ff6b4a;
+      --edge: rgba(255, 255, 255, 0.09);
+      --radius: 18px;
+      --shadow: 0 0.75rem 2.2rem rgba(0, 0, 0, 0.38);
+      color-scheme: dark light;
+    }
+
+    :root.light {
+      --bg: #f6f3ee;
+      --bg-soft: #ebe5dc;
+      --panel: #ffffff;
+      --panel-2: #f3eee7;
+      --text: #17151b;
+      --muted: #625e68;
+      --edge: rgba(30, 25, 40, 0.14);
+      --shadow: 0 0.75rem 2rem rgba(52, 39, 30, 0.14);
+    }
+
+    body {
+      margin: 0;
+      min-height: 100svh;
+      color: var(--text);
+      background:
+        radial-gradient(
+          900px 500px at 8% -8%,
+          rgba(255, 184, 77, 0.15),
+          transparent 60%
+        ),
+        radial-gradient(
+          900px 520px at 108% 0%,
+          rgba(142, 107, 255, 0.17),
+          transparent 50%
+        ),
+        var(--bg);
+      font-family:
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Inter,
+        Arial,
+        sans-serif;
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .container {
+      width: min(1180px, calc(100% - 2rem));
+      margin: 0 auto;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 80;
+      border-bottom: 1px solid var(--edge);
+      background: color-mix(in oklab, var(--bg), transparent 16%);
+      backdrop-filter: saturate(140%) blur(12px);
+    }
+
+    .nav {
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      white-space: nowrap;
+    }
+
+    .brand img {
+      width: 44px;
+      height: 44px;
+      object-fit: contain;
+      border-radius: 10px;
+    }
+
+    .spacer {
+      flex: 1;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .btn,
+    .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      padding: 0.68rem 1rem;
+      cursor: pointer;
+      font-weight: 750;
+      transition: 0.18s ease;
+    }
+
+    .btn {
+      color: #101116;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+      box-shadow: 0 10px 24px rgba(142, 107, 255, 0.2);
+    }
+
+    .btn-outline {
+      color: var(--text);
+      border-color: var(--edge);
+      background: color-mix(in oklab, var(--panel), transparent 18%);
+    }
+
+    .btn:hover,
+    .btn-outline:hover {
+      transform: translateY(-2px);
+    }
+
+    .theme-btn {
+      padding: 0.6rem 0.75rem;
+    }
+
+    .hero {
+      padding: 5rem 0 3rem;
+      border-bottom: 1px solid var(--edge);
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .eyebrow,
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      font-weight: 750;
+    }
+
+    .eyebrow {
+      padding: 0.42rem 0.75rem;
+      color: #f6e9ff;
+      background: rgba(0, 0, 0, 0.48);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+    }
+
+    .hero h1 {
+      margin: 0.7rem 0 1rem;
+      font-size: clamp(2.6rem, 6vw, 5.2rem);
+      line-height: 0.98;
+    }
+
+    .hero p {
+      max-width: 760px;
+      margin: 0 0 1.4rem;
+      color: var(--muted);
+      font-size: clamp(1rem, 1.7vw, 1.2rem);
+    }
+
+    .prototype-art {
+      min-height: 420px;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      border: 1px solid var(--edge);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(
+          135deg,
+          rgba(255, 184, 77, 0.18),
+          rgba(142, 107, 255, 0.2)
+        ),
+        var(--panel);
+      box-shadow: var(--shadow);
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .prototype-art span {
+      display: block;
+      color: var(--muted);
+      margin-top: 0.6rem;
+    }
+
+    .prototype-art strong {
+      font-size: clamp(2rem, 5vw, 4rem);
+      line-height: 1;
+    }
+
+    section.content {
+      padding: 4rem 0;
+      border-top: 1px solid var(--edge);
+    }
+
+    .section-head {
+      margin-bottom: 1.5rem;
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.3rem);
+      line-height: 1.05;
+    }
+
+    .section-head p {
+      max-width: 760px;
+      color: var(--muted);
+      margin: 0.5rem 0 0;
+    }
+
+    .grid {
+      display: grid;
+      gap: 22px;
+    }
+
+    .grid-2 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid-3 {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .card,
+    .glass {
+      border: 1px solid var(--edge);
+      border-radius: var(--radius);
+      background:
+        radial-gradient(
+          120% 120% at 10% 10%,
+          rgba(142, 107, 255, 0.14),
+          transparent 42%
+        ),
+        var(--panel);
+      box-shadow: var(--shadow);
+    }
+
+    .card {
+      padding: 1.25rem;
+    }
+
+    .glass {
+      padding: 1.35rem;
+    }
+
+    .pill {
+      padding: 0.23rem 0.58rem;
+      border: 1px solid rgba(255, 184, 77, 0.28);
+      background: rgba(255, 184, 77, 0.11);
+      color: #ffdca8;
+      font-size: 0.82rem;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 1rem 0 0;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 1.25rem;
+    }
+
+    .feature-list {
+      margin: 0;
+      padding-left: 1.2rem;
+    }
+
+    .feature-list li + li {
+      margin-top: 0.65rem;
+    }
+
+    .status-track {
+      display: grid;
+      gap: 14px;
+    }
+
+    .status-step {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .status-step-number {
+      width: 34px;
+      height: 34px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: #101116;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    }
+
+    .status-step h3 {
+      margin: 0;
+    }
+
+    .status-step p {
+      margin: 0.25rem 0 0;
+      color: var(--muted);
+    }
+
+    .notice {
+      padding: 1rem;
+      border-left: 4px solid var(--brand);
+      border-radius: 12px;
+      background: var(--panel-2);
+      color: var(--muted);
+    }
+
+    footer {
+      padding: 2.2rem 0;
+      color: var(--muted);
+      background: var(--bg-soft);
+      border-top: 1px solid var(--edge);
+    }
+
+    .footer-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    @media (max-width: 900px) {
+      .hero-grid,
+      .grid-2,
+      .grid-3 {
+        grid-template-columns: 1fr;
+      }
+
+      .prototype-art {
+        min-height: 320px;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .nav {
+        align-items: flex-start;
+        padding: 0.7rem 0;
+      }
+
+      .brand span {
+        display: none;
+      }
+
+      .hero {
+        padding-top: 3.5rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container nav">
+      <a
+        class="brand"
+        href="index.html"
+        aria-label="Bad Wizard Games home"
+      >
+        <img
+          src="assets/logo.png"
+          alt="Bad Wizard Games logo"
+        >
+        <span>Bad Wizard Games</span>
+      </a>
+
+      <nav class="spacer" aria-label="Primary navigation">
+        <a class="btn-outline" href="index.html#games">
+          Games
+        </a>
+
+        <a class="btn-outline" href="index.html#studio">
+          Studio
+        </a>
+
+        <a class="btn-outline" href="index.html#contact">
+          Contact
+        </a>
+
+        <button
+          class="btn-outline theme-btn"
+          id="themeBtn"
+          type="button"
+          aria-label="Toggle theme"
+          aria-pressed="false"
+        >
+          🌗
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div>
+          <span class="eyebrow">
+            Prototype • In Development
+          </span>
+
+          <h1>Prototype</h1>
+
+          <p>
+            A new Bad Wizard Games experience is currently taking shape.
+            This prototype page introduces the concept, development goals,
+            early mechanics, and ways players can help shape the final game.
+          </p>
+
+          <div class="meta">
+            <span class="pill">2–6 Players</span>
+            <span class="pill">45–90 Minutes</span>
+            <span class="pill">Prototype Build</span>
+          </div>
+
+          <div class="cta">
+            <a class="btn" href="index.html#news-email">
+              Join Playtesting
+            </a>
+
+            <a
+              class="btn-outline"
+              href="index.html#games"
+            >
+              Back to Games
+            </a>
+          </div>
+        </div>
+
+        <div class="prototype-art" aria-label="Prototype game artwork placeholder">
+          <div>
+            <strong>PROTOTYPE</strong>
+            <span>Concept art and final title coming soon</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content">
+      <div class="container">
+        <div class="section-head">
+          <h2>Game Concept</h2>
+          <p>
+            This prototype is being developed as a high-interaction tabletop
+            game focused on player decisions, shifting alliances, unexpected
+            consequences, and memorable narrative moments.
+          </p>
+        </div>
+
+        <div class="grid grid-2">
+          <article class="card">
+            <span class="pill">Core Experience</span>
+            <h3>Every Choice Changes the Table</h3>
+            <p>
+              Players pursue competing goals while responding to shared events,
+              limited resources, and changing relationships. Success depends on
+              planning ahead, reading opponents, and knowing when to cooperate
+              or betray.
+            </p>
+          </article>
+
+          <article class="card">
+            <span class="pill">Design Goal</span>
+            <h3>Fast Rules, Deep Consequences</h3>
+            <p>
+              The game is designed to be easy to teach while still creating
+              strategic depth through card interactions, player powers, and
+              evolving board conditions.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="content">
+      <div class="container">
+        <div class="section-head">
+          <h2>Prototype Features</h2>
+          <p>
+            These systems are currently being tested and may change as the game
+            develops.
+          </p>
+        </div>
+
+        <div class="grid grid-3">
+          <article class="glass">
+            <h3>Asymmetric Roles</h3>
+            <p>
+              Each player begins with a different ability, agenda, or advantage
+              that encourages distinct strategies.
+            </p>
+          </article>
+
+          <article class="glass">
+            <h3>Dynamic Events</h3>
+            <p>
+              Events alter the board, introduce new threats, and force players
+              to adapt their plans.
+            </p>
+          </article>
+
+          <article class="glass">
+            <h3>Negotiation</h3>
+            <p>
+              Players may trade resources, make temporary alliances, and create
+              deals that are not always guaranteed to last.
+            </p>
+          </article>
+
+          <article class="glass">
+            <h3>Resource Management</h3>
+            <p>
+              Limited resources must be invested carefully to unlock actions,
+              upgrades, and scoring opportunities.
+            </p>
+          </article>
+
+          <article class="glass">
+            <h3>Multiple Paths to Victory</h3>
+            <p>
+              Players can pursue different scoring strategies rather than
+              relying on one fixed route to win.
+            </p>
+          </article>
+
+          <article class="glass">
+            <h3>Replayable Stories</h3>
+            <p>
+              Variable setup, randomized events, and player interaction produce
+              a different story each time the game is played.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="content">
+      <div class="container grid grid-2">
+        <div>
+          <div class="section-head">
+            <h2>Development Status</h2>
+            <p>
+              The project is moving through an iterative design and testing
+              process.
+            </p>
+          </div>
+
+          <div class="status-track">
+            <div class="status-step">
+              <div class="status-step-number">1</div>
+              <div>
+                <h3>Concept Design</h3>
+                <p>
+                  Theme, player experience, and core gameplay goals have been
+                  established.
+                </p>
+              </div>
+            </div>
+
+            <div class="status-step">
+              <div class="status-step-number">2</div>
+              <div>
+                <h3>Working Prototype</h3>
+                <p>
+                  Cards, tokens, boards, and rules are being tested in an early
+                  playable format.
+                </p>
+              </div>
+            </div>
+
+            <div class="status-step">
+              <div class="status-step-number">3</div>
+              <div>
+                <h3>Playtesting</h3>
+                <p>
+                  Feedback is being collected on balance, pacing, clarity, and
+                  player enjoyment.
+                </p>
+              </div>
+            </div>
+
+            <div class="status-step">
+              <div class="status-step-number">4</div>
+              <div>
+                <h3>Revision and Art</h3>
+                <p>
+                  Mechanics, graphic design, artwork, and component layouts will
+                  evolve based on test results.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <article class="glass" id="playtesting">
+          <span class="pill">Playtest Program</span>
+
+          <h2>Help Shape the Game</h2>
+
+          <p>
+            Bad Wizard Games uses player feedback to improve rules, balance,
+            pacing, accessibility, and replayability before a game enters
+            production.
+          </p>
+
+          <ul class="feature-list">
+            <li>Test early builds and revised rule sets.</li>
+            <li>Report unclear rules, balance problems, and edge cases.</li>
+            <li>Share feedback about theme, pacing, and player interaction.</li>
+            <li>Receive recognition when appropriate in project credits.</li>
+          </ul>
+
+          <div class="notice">
+            Prototype materials, artwork, names, mechanics, and release details
+            may change before publication.
+          </div>
+
+          <div class="cta">
+            <a
+              class="btn"
+              href="mailto:hello@badwizard.games?subject=Prototype%20Playtesting"
+            >
+              Apply to Playtest
+            </a>
+
+            <a
+              class="btn-outline"
+              href="index.html#newsletter"
+            >
+              Get Development Updates
+            </a>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-row">
+      <div>
+        © <span id="year"></span> Bad Wizard Games. All rights reserved.
+      </div>
+
+      <a class="btn-outline" href="index.html#games">
+        Back to Games
+      </a>
+    </div>
+  </footer>
+
+  <script>
+    const root = document.documentElement;
+    const themeButton = document.getElementById("themeBtn");
+    const savedTheme = localStorage.getItem("bwg-theme");
+
+    function setTheme(mode) {
+      root.classList.toggle("light", mode === "light");
+      themeButton.setAttribute(
+        "aria-pressed",
+        String(mode === "light")
+      );
+      localStorage.setItem("bwg-theme", mode);
+    }
+
+    setTheme(
+      savedTheme ||
+      (
+        window.matchMedia("(prefers-color-scheme: light)").matches
+          ? "light"
+          : "dark"
+      )
+    );
+
+    themeButton.addEventListener("click", () => {
+      setTheme(
+        root.classList.contains("light")
+          ? "dark"
+          : "light"
+      );
+    });
+
+    document.getElementById("year").textContent =
+      new Date().getFullYear();
+  </script>
+</body>
+</html>

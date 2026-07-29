@@ -1,0 +1,820 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>CULT LEADER — Web Edition</title>
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<style>
+  :root{
+    --bg:#0e0c0c; --panel:#181414; --ink:#eee5d0; --muted:#b9b099;
+    --accent:#c92c2c; --accent2:#7ec3ff; --good:#7bd38b; --warn:#ffb84d;
+  }
+  html,body{height:100%}
+  body {
+    margin: 0;
+    color: var(--ink);
+    font-family: system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial;
+    background:
+      radial-gradient(80vw 50vh at 60% -20vh, rgba(201,44,44,.10), transparent 70%),
+      radial-gradient(60vw 40vh at -10% 10%, rgba(255,200,150,.06), transparent 70%),
+      radial-gradient(100vw 70vh at 120% 120%, rgba(255,100,80,.05), transparent 65%),
+      repeating-linear-gradient(180deg, rgba(0,0,0,.2) 0 2px, rgba(0,0,0,0) 3px 6px),
+      #0e0c0c;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+  }
+  header{
+    padding:22px 20px 28px;
+    border-bottom:1px solid #231717;
+    background:
+      radial-gradient(300px 120px at 20% -40px, rgba(201,44,44,.25), transparent 70%),
+      linear-gradient(180deg,#161111,#120e0e 60%, #0f0b0b);
+    position:relative;
+  }
+  h1{margin:0; letter-spacing:.12em; font-weight:900}
+  .tagline{color:var(--muted); margin-top:4px}
+  .sigil{
+    position:absolute; inset:auto 16px -20px auto; width:140px; height:140px; opacity:.18; pointer-events:none;
+    filter:drop-shadow(0 0 6px rgba(201,44,44,.35));
+  }
+
+  /* ===== Occult decorative frame ===== */
+  .occult-frame{
+    position:relative;
+    margin:18px auto 36px;
+    max-width:1250px;
+    padding-top:28px; /* room for candles */
+  }
+  .occult-frame > main{
+    position:relative;
+    z-index:10;
+    background:linear-gradient(180deg,#151010,#0f0b0b);
+    border-radius:18px;
+    border:1px solid #2a1d1d;
+    box-shadow:
+      0 12px 40px rgba(0,0,0,.45),
+      0 0 0 1px #000 inset;
+    padding:16px;
+  }
+
+  /* Stronger, darker parchment frame with texture */
+  .parchment-edge {
+    position: absolute;
+    inset: -26px -26px -26px -26px;
+    z-index: 1;
+    border-radius: 28px;
+
+    /* Darker parchment tones */
+    background:
+      linear-gradient(135deg, #2a1f1f 0%, #1a1411 40%, #120d0c 100%),
+      url('https://www.transparenttextures.com/patterns/aged-paper.png'); /* subtle texture */
+    background-size: cover, 200px 200px;
+
+    /* Stronger inner/outer shadows */
+    box-shadow:
+      0 0 0 2px rgba(20,12,12,.85) inset,
+      0 0 0 14px rgba(10,6,6,.75) inset,
+      0 12px 40px rgba(0,0,0,.55);
+
+    filter: contrast(1.1) saturate(0.9) brightness(0.9);
+  }
+
+  /* Tiny blood flecks (symbolic) */
+  .blood-flecks{
+    position:absolute; inset:-26px -26px -26px -26px; z-index:2; border-radius:28px; pointer-events:none;
+    background:
+      radial-gradient(6px 6px at 10% 20%, rgba(160,26,26,.35), transparent 55%),
+      radial-gradient(4px 4px at 22% 16%, rgba(160,26,26,.30), transparent 60%),
+      radial-gradient(5px 5px at 84% 12%, rgba(160,26,26,.30), transparent 60%),
+      radial-gradient(3px 3px at 76% 86%, rgba(160,26,26,.25), transparent 60%),
+      radial-gradient(5px 5px at 14% 84%, rgba(160,26,26,.28), transparent 60%);
+    mix-blend-mode:screen; opacity:.6;
+  }
+
+  /* Corner sigils */
+  .corner-sigil{
+    position:absolute; width:70px; height:70px; z-index:6; opacity:.9;
+    filter: drop-shadow(0 4px 10px rgba(201,44,44,.35));
+    animation:pulse 6s ease-in-out infinite;
+  }
+  .corner-sigil.tl{ left:-14px; top:-14px; }
+  .corner-sigil.tr{ right:-14px; top:-14px; }
+  .corner-sigil.bl{ left:-14px; bottom:-14px; }
+  .corner-sigil.br{ right:-14px; bottom:-14px; }
+  @keyframes pulse { 0%,100%{opacity:.9} 50%{opacity:1} }
+
+  /* ===== Corner Candles ===== */
+  .candle{
+    position:absolute; z-index:12; width:26px; height:54px; pointer-events:none;
+    filter: drop-shadow(0 6px 14px rgba(0,0,0,.5));
+  }
+  .candle.tl{ top:-8px; left:75px; transform:rotate(-2deg) }
+  .candle.tr{ top:-8px; right:75px; transform:rotate(2deg) }
+
+  .candle .wax{
+    position:absolute; bottom:0; left:50%; transform:translateX(-50%);
+    width:20px; height:42px; border-radius:6px 6px 2px 2px;
+    background: linear-gradient(180deg,#f1e7cf,#e4d7b4 40%, #cabf9c 70%, #a39477 100%);
+    box-shadow:
+      inset 0 0 0 1px rgba(0,0,0,.25),
+      inset 0 -12px 10px rgba(0,0,0,.15);
+    animation:wax-breathe 3.8s ease-in-out infinite;
+  }
+  .candle .wax::before, .candle .wax::after{
+    content:""; position:absolute; bottom:6px; width:6px; height:10px; border-radius:3px;
+    background:linear-gradient(180deg,#e7dbc4,#cbbfa0);
+  }
+  .candle .wax::before{ left:2px; box-shadow:0 2px 0 rgba(0,0,0,.05) }
+  .candle .wax::after{ right:2px; height:12px }
+
+  .candle .wick{
+    position:absolute; bottom:40px; left:50%; transform:translateX(-50%);
+    width:2px; height:8px; background:#2b211d; border-radius:1px;
+  }
+
+  .candle .flame{
+    position:absolute; bottom:42px; left:50%; transform:translateX(-50%);
+    width:6px; height:12px; border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;
+    background: radial-gradient(45% 60% at 50% 55%, #ffd774 0%, #ff9b2f 55%, #ff5d25 75%, rgba(255,93,37,.0) 100%);
+    animation: flame-flicker .12s infinite alternate ease-in-out,
+               flame-sway 1.8s infinite ease-in-out;
+    box-shadow:
+      0 0 10px 3px rgba(255,125,54,.75),
+      0 0 22px 6px rgba(255,163,54,.45),
+      0 0 36px 12px rgba(255,163,54,.25);
+  }
+  .candle .flame::before{
+    content:""; position:absolute; inset:-3px -4px -6px -4px; border-radius:50%;
+    background: radial-gradient(40% 55% at 50% 55%, rgba(255,235,190,.9), rgba(255,180,90,.0) 70%);
+    filter: blur(1.2px); opacity:.9;
+  }
+  .candle .flame::after{
+    content:""; position:absolute; bottom:-40px; left:50%; transform:translateX(-50%);
+    width:120px; height:70px; border-radius:50%;
+    background: radial-gradient(60% 45% at 50% 40%, rgba(255,135,60,.30), rgba(255,135,60,0));
+    filter: blur(10px); opacity:.7;
+  }
+  @keyframes flame-flicker{
+    from{ transform:translateX(-50%) scale(1) }
+    to  { transform:translateX(-50%) scale(1.08) }
+  }
+  @keyframes flame-sway{
+    0%  { transform:translateX(-50%) translateY(0) rotate(-3deg) }
+    50% { transform:translateX(-50%) translateY(-1px) rotate(3deg) }
+    100%{ transform:translateX(-50%) translateY(0) rotate(-2deg) }
+  }
+  @keyframes wax-breathe{
+    0%,100%{ box-shadow: inset 0 0 0 1px rgba(0,0,0,.25), inset 0 -12px 10px rgba(0,0,0,.15) }
+    50%    { box-shadow: inset 0 0 0 1px rgba(0,0,0,.25), inset 0 -12px 12px rgba(0,0,0,.22) }
+  }
+
+  /* Content grid/cards */
+  main{max-width:1140px; margin:0 auto; padding:0 16px}
+  .grid{display:grid; gap:16px}
+  .cols{grid-template-columns:repeat(12,1fr)}
+  .card{
+    background:linear-gradient(180deg,#1a1414,#120e0e);
+    border:1px solid #2b2020; border-radius:14px; padding:14px 16px;
+    box-shadow:0 0 0 1px #000 inset, 0 12px 30px rgba(0,0,0,.35);
+    position:relative;
+  }
+  .card::before{
+    content:""; position:absolute; inset:6px; border-radius:10px;
+    background:
+      repeating-linear-gradient(90deg, transparent 0 28px, rgba(255,255,255,.05) 28px 29px, transparent 29px 56px),
+      linear-gradient(180deg, transparent, rgba(255,255,255,.03), transparent);
+    mask:linear-gradient(#000,#000) content-box, linear-gradient(#000,#000);
+    -webkit-mask-composite: xor; mask-composite: exclude;
+    border:1px solid rgba(255,255,255,.06);
+    pointer-events:none;
+  }
+  .title{font-weight:800; letter-spacing:.08em; color:var(--muted); margin:2px 0 8px; text-transform:uppercase; font-size:.92rem}
+  .flex{display:flex; gap:8px; align-items:center; flex-wrap:wrap}
+  .stack{display:flex; flex-direction:column; gap:10px}
+  .row{display:flex; gap:12px; align-items:center; flex-wrap:wrap}
+  .pill{display:inline-flex; align-items:center; gap:6px; padding:6px 10px; border-radius:999px; background:#241f1f; border:1px solid #2e2626; font-weight:700}
+  .pill.good{background:#0f2a18; border-color:#143a21; color:#b9ffd0}
+  .pill.warn{background:#2a1f0f; border-color:#3a2a14; color:#ffe0b3}
+  button,select,input{background:#161111; color:var(--ink); border:1px solid #342727; border-radius:10px; padding:8px 10px}
+  button{cursor:pointer; font-weight:800}
+  button:disabled{opacity:.45; cursor:not-allowed}
+  .bar{height:12px; background:#150f0f; border:1px solid #2b1f1f; border-radius:6px; overflow:hidden}
+  .bar>i{display:block; height:100%; background:linear-gradient(90deg,#7a0f0f,#c92c2c)}
+  .log{height:260px; overflow:auto; font-family:ui-monospace,Consolas,Menlo,monospace; background:#141111; border:1px solid #2a2222; padding:10px; border-radius:10px}
+  .small{font-size:.92rem; color:#b9b099}
+  .k{font-variant-numeric:tabular-nums}
+  .badge{border:1px solid #3a2c2c; padding:4px 8px; border-radius:8px; background:#1b1515; color:#e8d5c0; font-weight:800}
+  .divider{height:1px; background:#2a2222; margin:10px 0 6px}
+  .temple{display:flex; gap:8px; align-items:center}
+  .step{width:24px;height:24px;border-radius:6px;border:1px solid #3a2c2c;background:#101010;display:inline-grid;place-items:center;font-size:.8rem}
+  .step.on{background:#2a1c1c; color:#ffd5d5; border-color:#c92c2c}
+  .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+  .faith{background:#ff7b7b}.wealth{background:#ffb347}.fear{background:#7bd38b}.secrecy{background:#7ec3ff}
+  .twirl{height:14px; opacity:.5; display:block; margin:8px 0}
+  footer{color:#9b9280; text-align:center; padding:28px 0}
+  @media (max-width:960px){ .cols{grid-template-columns:1fr} .log{height:220px} }
+
+  /* Modal */
+  .modal{position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.6); z-index:50}
+  .modal.open{display:flex}
+  .modal .sheet{
+    width:min(940px,92vw); max-height:86vh; overflow:auto;
+    background:linear-gradient(180deg,#1a1414,#120e0e); border:1px solid #2b2020; border-radius:16px; padding:18px 20px; box-shadow:0 18px 60px rgba(0,0,0,.55)
+  }
+  .sheet h2{margin:0 0 8px}
+  .sheet .sub{color:#b9b099; margin:0 0 14px}
+  .sheet .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+  .sheet .klist{background:#161111; border:1px solid #2a2222; border-radius:12px; padding:12px}
+  .x{float:right; margin:-6px -6px 0 0}
+  .back-btn {
+    margin: 6px 0;
+    background:#161111;
+    border:1px solid #342727;
+    border-radius:10px;
+    padding:8px 14px;
+    color:var(--ink);
+    font-weight:800;
+    cursor:pointer;
+    display:inline-block;
+  }
+  .back-btn:hover {
+    background:#2a1c1c;
+    border-color:#c92c2c;
+    color:#ffd5d5;
+  }
+</style>
+</head>
+<body>
+<header>
+  <svg class="sigil" viewBox="0 0 100 100" aria-hidden="true">
+    <circle cx="50" cy="50" r="44" fill="none" stroke="#c92c2c" stroke-width="2"/>
+    <line x1="6" y1="50" x2="94" y2="50" stroke="#c92c2c" stroke-width="1"/>
+    <line x1="50" y1="6" x2="50" y2="94" stroke="#c92c2c" stroke-width="1"/>
+    <circle cx="50" cy="50" r="6" fill="#c92c2c"/><text x="50" y="54" text-anchor="middle" font-size="12" fill="#120e0e">☠</text>
+  </svg>
+  <h1>CULT LEADER <span class="small">— browser edition</span></h1>
+  <div class="tagline">Build your flock · Construct your temple · Evade the eye of the State</div>
+  <button class="btn" onclick="if(history.length > 1){history.back();}else{window.location.href='../../index.html#games';}"> 
+    ← Back to Games
+  </button>
+</header>
+
+<!-- Occult frame wrapper START -->
+<div class="occult-frame">
+  <!-- parchment + blood layers -->
+  <div class="parchment-edge"></div>
+  <div class="blood-flecks"></div>
+
+  <!-- four corner sigils -->
+  <svg class="corner-sigil tl" viewBox="0 0 100 100" aria-hidden="true">
+    <circle cx="50" cy="50" r="38" fill="none" stroke="#c92c2c" stroke-width="2"/>
+    <path d="M50 18 L50 82 M18 50 L82 50" stroke="#c92c2c" stroke-width="1"/>
+    <path d="M34,66 L50,34 L66,66 Z" fill="none" stroke="#c92c2c" stroke-width="2"/>
+  </svg>
+  <svg class="corner-sigil tr" viewBox="0 0 100 100" aria-hidden="true">
+    <circle cx="50" cy="50" r="38" fill="none" stroke="#c92c2c" stroke-width="2"/>
+    <path d="M50 18 L50 82 M18 50 L82 50" stroke="#c92c2c" stroke-width="1"/>
+    <path d="M34,34 L66,50 L34,66 Z" fill="none" stroke="#c92c2c" stroke-width="2"/>
+  </svg>
+  <svg class="corner-sigil bl" viewBox="0 0 100 100" aria-hidden="true">
+    <circle cx="50" cy="50" r="38" fill="none" stroke="#c92c2c" stroke-width="2"/>
+    <path d="M50 18 L50 82 M18 50 L82 50" stroke="#c92c2c" stroke-width="1"/>
+    <path d="M34,50 L50,66 L66,50 L50,34 Z" fill="none" stroke="#c92c2c" stroke-width="2"/>
+  </svg>
+  <svg class="corner-sigil br" viewBox="0 0 100 100" aria-hidden="true">
+    <circle cx="50" cy="50" r="38" fill="none" stroke="#c92c2c" stroke-width="2"/>
+    <path d="M50 18 L50 82 M18 50 L82 50" stroke="#c92c2c" stroke-width="1"/>
+    <path d="M42,42 L58,42 L58,58 L42,58 Z" fill="none" stroke="#c92c2c" stroke-width="2"/>
+  </svg>
+
+  <!-- Candles (top corners) -->
+  <div class="candle tl" aria-hidden="true">
+    <div class="wax"></div>
+    <div class="wick"></div>
+    <div class="flame"></div>
+  </div>
+  <div class="candle tr" aria-hidden="true">
+    <div class="wax"></div>
+    <div class="wick"></div>
+    <div class="flame"></div>
+  </div>
+
+  <!-- Your existing game <main> inside frame -->
+  <main class="grid cols">
+    <!-- Left: Setup / Actions -->
+    <section class="card" style="grid-column: span 5">
+      <div class="title">Setup 🩸</div>
+      <div class="stack">
+        <div class="row">
+          <label class="badge">Archetype</label>
+          <select id="archetype">
+            <option value="firebrand">🔥 Firebrand Preacher — High Faith, sermon burst</option>
+            <option value="shadow">👁 Shadow Prophet — High Secrecy, event negate</option>
+            <option value="wealthy">💰 Wealthy Visionary — +Wealth per round, extra suspicion</option>
+            <option value="iron">🗡 Iron Fist — High Fear, silence dissent</option>
+            <option value="false">✨ False Messiah — Magnetic, fragile to scandals</option>
+            <option value="scholar">📜 Scholar — +Doctrine capacity</option>
+            <option value="oracle">🩸 Blood Oracle — Sacrifice ↔ resources</option>
+          </select>
+        </div>
+        <div class="row">
+          <label class="badge">Doctrine</label>
+          <select id="doctrine">
+            <option value="none">— none —</option>
+            <option value="blood">Blood Sacrifice</option>
+            <option value="prosperity">Prosperity Gospel</option>
+            <option value="secrecy">Doctrine of Secrecy</option>
+            <option value="fear">Doctrine of Fear</option>
+            <option value="book">Book of Forbidden Truths</option>
+            <option value="ritual">Ritual of Blood and Ash</option>
+          </select>
+        </div>
+        <div class="row">
+          <button id="startBtn" class="btn">Start New Game</button>
+        </div>
+      </div>
+
+      <hr class="twirl" style="border:none;background:linear-gradient(90deg,transparent,rgba(255,255,255,.25),transparent)"/>
+
+      <div class="title">Phase A — Recruitment 📯</div>
+      <div class="row">
+        <button id="actPreach" disabled title="Roll 1d6 + Faith vs TN7. Success: gain 1d3 followers.">Preach</button>
+        <button id="actBribe"  disabled title="Spend 2 Wealth to gain 1 follower automatically.">Bribe</button>
+        <button id="actIntimidate" disabled title="Roll 1d6 + Fear vs TN6. Success: +1 follower. Suspicion +1 either way.">Intimidate</button>
+      </div>
+
+      <div class="divider"></div>
+      <div class="title">Phase B — Resource Gathering ⚒</div>
+      <div class="row">
+        <button id="assignPray" disabled title="Assign one follower: +1 Faith">Pray</button>
+        <button id="assignWork" disabled title="Assign one follower: +1 Wealth">Work</button>
+        <button id="assignGuard" disabled title="Assign one follower: +1 Fear">Guard</button>
+        <button id="assignHide" disabled title="Assign one follower: −1 Suspicion (min 0)">Hide</button>
+        <span class="small" id="assignLeft">—</span>
+      </div>
+
+      <div class="divider"></div>
+      <div class="title">Phase C — Construction ⛪</div>
+      <div class="row">
+        <button id="buildTemple" disabled title="Cost per stage: 2, 4, 6, 8 Wealth. Suspicion +1 each build.">Build / Upgrade Temple</button>
+        <button id="skipBuild" disabled title="Skip construction this round and proceed to Event.">Skip Build</button>
+        <span class="small">Costs escalate; building raises suspicion.</span>
+      </div>
+      <div class="row">
+        <label class="badge">Auto-advance</label>
+        <label class="small"><input type="checkbox" id="autoAdv" /> Enable</label>
+        <label class="small">Delay (sec): <input type="number" id="autoDelay" value="6" min="2" max="60" style="width:70px"/></label>
+        <span class="small" id="autoStatus">—</span>
+      </div>
+
+      <div class="divider"></div>
+      <div class="title">Phase D — Event 🃏</div>
+      <div class="row">
+        <button id="drawEvent" disabled title="Draw and resolve a random Event.">Draw Event</button>
+        <button id="endRound" disabled title="End the round and advance time.">End Round</button>
+      </div>
+    </section>
+
+    <!-- Middle: Stats -->
+    <section class="card" style="grid-column: span 4">
+      <div class="title">Cult Status 👥</div>
+      <div class="stack">
+        <div class="row">
+          <span class="pill"><span class="dot faith"></span>Faith: <b class="k" id="statFaith">0</b></span>
+          <span class="pill"><span class="dot wealth"></span>Wealth: <b class="k" id="statWealth">0</b></span>
+          <span class="pill"><span class="dot fear"></span>Fear: <b class="k" id="statFear">0</b></span>
+          <span class="pill"><span class="dot secrecy"></span>Secrecy: <b class="k" id="statSecrecy">0</b></span>
+        </div>
+        <div class="row">
+          <span class="pill good">👤 Followers: <b class="k" id="statFollowers">0</b></span>
+          <span class="pill warn">⏳ Round: <b class="k" id="statRound">0</b></span>
+          <span class="pill">📜 Doctrine: <b id="statDoctrine">—</b></span>
+        </div>
+
+        <div class="title">Suspicion 🚨</div>
+        <div class="bar" title="If Suspicion maxes out, the Final Raid begins (Secrecy vs TN10).">
+          <i id="suspBar" style="width:0%"></i>
+        </div>
+        <div class="small">If Suspicion reaches the limit, a Final Raid triggers (Secrecy check TN10). Survive or collapse.</div>
+
+        <div class="divider"></div>
+        <div class="title">Temple Progress ⛩</div>
+        <div class="temple">
+          <span class="step" id="tAltar" title="Altar: +1 Faith">A</span>
+          <span class="step" id="tShrine" title="Shrine: +1 Secrecy">S</span>
+          <span class="step" id="tSanct" title="Sanctuary: +2 Faith">SN</span>
+          <span class="step" id="tGrand" title="Grand Temple: +3 Faith & +2 Wealth per round">GT</span>
+        </div>
+        <div class="small">Altar +1F · Shrine +1S · Sanctuary +2F · Grand Temple +3F & +2W/round</div>
+
+        <hr class="twirl" style="border:none;background:linear-gradient(90deg,transparent,rgba(255,255,255,.18),transparent)"/>
+
+        <svg width="100%" height="10" viewBox="0 0 100 4" aria-hidden="true">
+          <path d="M2,2 L98,2" stroke="rgba(255,255,255,.22)" stroke-width="1"/>
+          <circle cx="50" cy="2" r="1.2" fill="#c92c2c"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- Right: Log -->
+    <section class="card" style="grid-column: span 3">
+      <div class="title">Log 📜</div>
+      <div class="log" id="log"></div>
+      <div class="row" style="margin-top:8px; flex-direction:column; align-items:flex-start; gap:6px">
+        <div>
+          <button id="reset" class="btn" title="Reloads the page">Reset</button>
+          <span class="small">Tip: Hover buttons for quick rule hints.</span>
+        </div>
+        <div>
+          <button id="btnHelp" class="btn" title="View the in-browser rules & how to play">Instructions</button>
+        </div>
+      </div>
+    </section>
+
+    <section style="grid-column:1/-1">
+      <footer>
+        Rules adapted from official Cult Leader Rules document. <!-- citation below -->
+        <div class="small">Reference: Cult Leader Rules.</div>
+        © Bad Wizard Games 2025
+      </br></br>
+      <img src = logo_small.png>
+      </footer>
+    </section>
+  </main>
+</div>
+<!-- Occult frame wrapper END -->
+
+<!-- Instructions Modal -->
+<div class="modal" id="helpModal" aria-hidden="true">
+  <div class="sheet">
+    <button class="btn x" id="helpClose" title="Close">✖</button>
+    <h2>How to Play — Cult Leader</h2>
+    <p class="sub">Build followers, gather resources (Faith, Wealth, Fear, Secrecy), raise your Temple, manage Suspicion, and survive Events.</p>
+
+    <div class="grid2">
+      <div class="klist">
+        <h3>Setup</h3>
+        <ul>
+          <li>Pick an <b>Archetype</b> & a <b>Doctrine</b>.</li>
+          <li>Start with <b>5 Followers</b>, F=2, W=2, R=1, S=1; place a free <b>Altar</b> at Round 1.</li>
+          <li>Suspicion starts at 0.</li>
+        </ul>
+        <h3>Round Flow</h3>
+        <ol>
+          <li><b>Recruitment:</b> Preach (F vs TN7), Bribe (−2W), or Intimidate (R vs TN6; +1 Susp).</li>
+          <li><b>Resource:</b> Each Follower does 1 task: Pray (+F), Work (+W), Guard (+R), Hide (−Susp).</li>
+          <li><b>Construction:</b> Build/upgrade Temple (2→4→6→8 W). Suspicion +1.</li>
+          <li><b>Event:</b> Draw & resolve a random Event.</li>
+        </ol>
+      </div>
+      <div class="klist">
+        <h3>Temple Benefits</h3>
+        <ul>
+          <li><b>Altar:</b> +1 Faith</li>
+          <li><b>Shrine:</b> +1 Secrecy</li>
+          <li><b>Sanctuary:</b> +2 Faith</li>
+          <li><b>Grand Temple:</b> +3 Faith & +2 Wealth each Round</li>
+        </ul>
+        <h3>Suspicion & Final Raid</h3>
+        <p>When Suspicion hits max, roll <b>Secrecy vs TN10</b>. Fail = collapse. Survive and continue until victory. </p>
+        <h3>Win Conditions</h3>
+        <ul>
+          <li><b>Dominance:</b> Hold a Grand Temple for 3 Rounds.</li>
+          <li><b>Last Cult Standing</b>.</li>
+          <li><b>Final Raid survivor</b> with highest Faith (variant).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===== Helpers / State ===== */
+const $ = sel => document.querySelector(sel);
+const logEl = $('#log');
+const state = {
+  round: 0, phase: 'setup',
+  followers: 5, faith: 2, wealth: 2, fear: 1, secrecy: 1,
+  suspicion: 0, suspMax: 20,
+  templeStage: 0, assignLeft: 0, started: false,
+  archetype: 'firebrand', doctrine: 'none',
+  oncePerRoundFlags: { sermon:false, hiddenNetwork:false, brutalOrder:false, magnetic:false, esoteric:false, oraclePeek:false, wealthyTick:false },
+  autoTimer: null,
+};
+const dice = (sides=6)=> 1+Math.floor(Math.random()*sides);
+const d3 = ()=> 1+Math.floor(Math.random()*3);
+const pct = (a,b)=>Math.round((a/b)*100);
+function log(msg){ const p=document.createElement('div'); p.textContent=msg; logEl.appendChild(p); logEl.scrollTop=logEl.scrollHeight; }
+
+/* ===== Modal (Instructions) ===== */
+function openHelp(){ 
+  const m = document.getElementById('helpModal'); if(!m) return;
+  m.classList.add('open'); m.setAttribute('aria-hidden','false'); 
+}
+function closeHelp(){ 
+  const m = document.getElementById('helpModal'); if(!m) return;
+  m.classList.remove('open'); m.setAttribute('aria-hidden','true'); 
+}
+document.getElementById('btnHelp')?.addEventListener('click', openHelp);
+document.getElementById('helpClose')?.addEventListener('click', closeHelp);
+document.getElementById('helpModal')?.addEventListener('click', (e)=>{ if (e.target.id==='helpModal') closeHelp(); });
+
+/* ===== UI Refresh ===== */
+function refresh(){
+  $('#statRound').textContent = state.round;
+  $('#statFollowers').textContent = state.followers;
+  $('#statFaith').textContent = state.faith;
+  $('#statWealth').textContent = state.wealth;
+  $('#statFear').textContent = state.fear;
+  $('#statSecrecy').textContent = state.secrecy;
+  $('#statDoctrine').textContent = $('#doctrine').selectedOptions[0]?.textContent || '—';
+  $('#suspBar').style.width = Math.min(100, pct(state.suspicion, state.suspMax))+'%';
+  $('#tAltar').classList.toggle('on', state.templeStage>=1);
+  $('#tShrine').classList.toggle('on', state.templeStage>=2);
+  $('#tSanct').classList.toggle('on', state.templeStage>=3);
+  $('#tGrand').classList.toggle('on', state.templeStage>=4);
+  $('#assignLeft').textContent = state.phase==='resource' ? `Assignments left: ${state.assignLeft}` : '—';
+
+  const inRecruit = state.phase==='recruit';
+  $('#actPreach').disabled = !inRecruit;
+  $('#actBribe').disabled  = !inRecruit || state.wealth<2;
+  $('#actIntimidate').disabled = !inRecruit;
+
+  const inRes = state.phase==='resource';
+  ['assignPray','assignWork','assignGuard','assignHide'].forEach(id=>{
+    $('#'+id).disabled = !inRes || state.assignLeft<=0;
+  });
+
+  const inBuild = state.phase==='build';
+  $('#buildTemple').disabled = !inBuild || !canBuild();
+  $('#skipBuild').disabled = !inBuild;
+
+  const inEvent = state.phase==='event';
+  $('#drawEvent').disabled = !inEvent;
+  $('#endRound').disabled = !(state.phase==='end');
+
+  $('#startBtn').disabled = state.started;
+}
+function canBuild(){ const cost = [0,2,4,6,8][state.templeStage+1] || 0; return state.templeStage<4 && state.wealth>=cost; }
+
+/* ===== Start / Reset ===== */
+$('#startBtn').onclick = ()=>{
+  Object.assign(state, {
+    round: 0, phase: 'recruit', followers:5, faith:2, wealth:2, fear:1, secrecy:1,
+    suspicion:0, templeStage:0, started:true,
+    doctrine: $('#doctrine').value, archetype: $('#archetype').value,
+    oncePerRoundFlags:{ sermon:false, hiddenNetwork:false, brutalOrder:false, magnetic:false, esoteric:false, oraclePeek:false, wealthyTick:false },
+  });
+  log('— NEW GAME —');
+  applyArchetypeSetup();
+  applyTempleBenefits();
+  log(`Archetype: ${$('#archetype').selectedOptions[0].textContent}`);
+  if (state.doctrine!=='none') log(`Doctrine active: ${$('#doctrine').selectedOptions[0].textContent}`);
+  startRound();
+  refresh();
+};
+$('#reset').onclick = ()=>{ location.reload(); };
+
+/* ===== Round / Phase Flow ===== */
+function startRound(){
+  clearAutoAdvance();
+  state.round++;
+  state.phase='recruit';
+  state.oncePerRoundFlags = { sermon:false, hiddenNetwork:false, brutalOrder:false, magnetic:false, esoteric:false, oraclePeek:false, wealthyTick:false };
+  if(state.archetype==='wealthy'){ state.wealth += 1; state.oncePerRoundFlags.wealthyTick=true; log('Wealthy Visionary: +1 Wealth passive.'); }
+  doctrineUpkeep();
+  if(state.templeStage===4){ state.faith+=3; state.wealth+=2; log('Grand Temple yields: +3 Faith, +2 Wealth.'); }
+  if(state.round===1 && state.templeStage===0){ state.templeStage=1; log('Starting Altar placed (Setup). +1 Faith.'); state.faith += 1; }
+  refresh();
+  log(`— Round ${state.round}: Phase A (Recruitment) —`);
+}
+
+/* ===== Recruitment ===== */
+$('#actPreach').onclick = ()=>{
+  const roll = dice()+state.faith, TN=7;
+  if(roll>=TN){
+    const gained = d3(); state.followers += gained;
+    log(`Preach succeeds (roll ${roll} ≥ ${TN}): +${gained} followers.`);
+    if(state.archetype==='firebrand' && !state.oncePerRoundFlags.sermon){
+      const r = dice()+state.faith;
+      if(r>=6){ state.followers+=2; state.suspicion++; log('Righteous Sermon: +2 followers, Suspicion +1.'); }
+      state.oncePerRoundFlags.sermon=true;
+    }
+  }else{ log(`Preach fails (roll ${roll} < ${TN}). Suspicion +1.`); state.suspicion++; }
+  nextPhase('resource');
+};
+$('#actBribe').onclick = ()=>{ if(state.wealth<2) return; state.wealth -= 2; state.followers += 1; log('Bribe: −2 Wealth → +1 follower.'); nextPhase('resource'); };
+$('#actIntimidate').onclick = ()=>{
+  const roll = dice()+state.fear, TN=6; state.suspicion++;
+  if(roll>=TN){ state.followers += 1; log(`Intimidate succeeds (roll ${roll} ≥ ${TN}): +1 follower. (+1 Suspicion)`); }
+  else{ log(`Intimidate fails (roll ${roll} < ${TN}). (+1 Suspicion)`); }
+  nextPhase('resource');
+};
+
+/* ===== Resource Assignments ===== */
+function nextPhase(to){
+  if(to==='resource'){
+    clearAutoAdvance();
+    state.phase='resource';
+    state.assignLeft = state.followers;
+    log('— Phase B (Resource Gathering) —');
+  }else if(to==='build'){
+    clearAutoAdvance();
+    state.phase='build';
+    log('— Phase C (Construction) —');
+    refresh();
+    if(!canBuild()){
+      log('No construction possible — skipping to Event.');
+      state.phase='event';
+      refresh();
+      log('— Phase D (Event) —');
+    }else{
+      maybeStartAutoAdvance();  // arm timer if enabled
+    }
+    return;
+  }else if(to==='event'){
+    clearAutoAdvance();
+    state.phase='event';
+    log('— Phase D (Event) —');
+  }else if(to==='end'){
+    clearAutoAdvance();
+    state.phase='end';
+    log('— End of Round — (click End Round) ');
+  }
+  refresh();
+}
+function consumeAssignment(effect){
+  if(state.assignLeft<=0) return;
+  effect();
+  state.assignLeft--;
+  if(state.assignLeft<=0) nextPhase('build');
+  refresh();
+}
+$('#assignPray').onclick = ()=> consumeAssignment(()=>{ state.faith += 1; log('+1 Faith from prayer.'); });
+$('#assignWork').onclick = ()=> consumeAssignment(()=>{ state.wealth += 1; log('+1 Wealth from work.'); });
+$('#assignGuard').onclick = ()=> consumeAssignment(()=>{ state.fear += 1; log('+1 Fear from guarding.'); });
+$('#assignHide').onclick = ()=> consumeAssignment(()=>{ state.suspicion = Math.max(0, state.suspicion-1); log('Suspicion −1 from hiding.'); });
+
+/* ===== Construction ===== */
+$('#buildTemple').onclick = ()=>{
+  clearAutoAdvance();
+  if(!canBuild()) return;
+  const next = state.templeStage+1, cost = [0,2,4,6,8][next];
+  if(state.wealth<cost) return;
+  state.wealth -= cost; state.templeStage = next; state.suspicion++;
+  log(`Temple → ${['','Altar','Shrine','Sanctuary','Grand Temple'][next]} (−${cost} Wealth, +1 Suspicion).`);
+  applyTempleBenefits(); refresh(); nextPhase('event');
+};
+$('#skipBuild').onclick = ()=>{ clearAutoAdvance(); log('Skipping construction.'); nextPhase('event'); };
+function applyTempleBenefits(){}
+
+/* ===== Auto-advance (Phase C → D) ===== */
+const autoAdvEl = document.getElementById('autoAdv');
+const autoDelayEl = document.getElementById('autoDelay');
+function maybeStartAutoAdvance(){
+  const enabled = !!autoAdvEl?.checked;
+  if(!enabled) { setAutoStatus('—'); return; }
+  const delaySec = normalizeDelay(autoDelayEl?.value);
+  let remaining = delaySec;
+  setAutoStatus(`Auto-advance in ${remaining}s…`);
+  clearAutoAdvance();
+  state.autoTimer = setInterval(()=>{
+    if(state.phase!=='build'){ clearAutoAdvance(); return; }
+    remaining--;
+    setAutoStatus(`Auto-advance in ${remaining}s…`);
+    if(remaining<=0){
+      clearAutoAdvance();
+      log('Auto-advance: moving to Event.');
+      nextPhase('event');
+    }
+  }, 1000);
+}
+function normalizeDelay(val){
+  const n = parseInt(val || '6', 10);
+  if (isNaN(n)) return 6;
+  return Math.max(2, Math.min(60, n));
+}
+function clearAutoAdvance(){
+  if(state.autoTimer){ clearInterval(state.autoTimer); state.autoTimer=null; }
+  setAutoStatus('—');
+}
+function setAutoStatus(txt){ const s = document.getElementById('autoStatus'); if(s) s.textContent = txt; }
+
+/* Live controls while in Phase C */
+autoAdvEl?.addEventListener('change', ()=>{
+  if(state.phase!=='build') return;
+  if(autoAdvEl.checked) { maybeStartAutoAdvance(); }
+  else { clearAutoAdvance(); }
+});
+autoDelayEl?.addEventListener('change', ()=>{
+  if(state.phase!=='build') return;
+  if(autoAdvEl.checked){ maybeStartAutoAdvance(); }
+});
+
+/* ===== Events ===== */
+const EVENT_DECK = [
+  {name:'Government Raid', kind:'raid', fn:()=>{
+    let tn=8, roll=dice()+state.secrecy;
+    if(roll<tn){ const lost=dice(); state.followers=Math.max(0,state.followers-lost); log(`Government Raid — Secrecy ${roll}<${tn}. Lose ${lost} followers.`); }
+    else{ log(`Government Raid — Secrecy ${roll}≥${tn}. You slip away.`); }
+    state.suspicion+=1;
+  }},
+  {name:'State Surveillance', kind:'raid', fn:()=>{ state.secrecy=Math.max(0,state.secrecy-2); state.suspicion+=1; log('State Surveillance — Secrecy −2.'); }},
+  {name:'Secret Police Raid', kind:'raid', fn:()=>{ if(state.templeStage>0){ state.templeStage--; log('Secret Police — Temple stage −1.'); } state.followers=Math.max(0,state.followers-2); state.suspicion+=1; }},
+
+  {name:'Mass Suicide Rumor', kind:'tragedy', fn:()=>{
+    const tn=7, roll=dice()+state.faith;
+    if(roll<tn){ const lost=d3(); state.followers=Math.max(0,state.followers-lost); const fLoss=(state.archetype==='firebrand')?2:1; state.faith=Math.max(0,state.faith-fLoss); log(`Mass Suicide Rumor — Lose ${lost} followers; Faith −${fLoss}.`); }
+    else{ log('Mass Suicide Rumor — You calm the flock.'); }
+    state.suspicion+=1;
+  }},
+  {name:'Temple Collapse', kind:'tragedy', fn:()=>{ if(state.templeStage>0){ state.templeStage--; log('Temple Collapse — stage −1.'); } state.suspicion+=1; }},
+  {name:'Temple Flooded', kind:'tragedy', fn:()=>{ if(state.templeStage>0){ state.templeStage--; log('Temple Flooded — stage −1.'); } state.suspicion+=1; }},
+
+  {name:'Donation Windfall', kind:'miracle', fn:()=>{ state.wealth+=5; log('Donation Windfall — +5 Wealth; free upgrade if possible.'); if(state.templeStage<4){ state.templeStage++; log('Free temple upgrade!'); } }},
+  {name:'Divine Apparition', kind:'miracle', fn:()=>{ state.faith+=3; state.followers+=1; log('Divine Apparition — +3 Faith, +1 follower.'); }},
+  {name:'Miracle of Ashes', kind:'miracle', fn:()=>{ if(state.templeStage<4 && state.templeStage>0){ state.templeStage++; log('Miracle of Ashes — Temple stage restored.'); } else log('Miracle of Ashes — No stage to restore.'); }},
+
+  {name:'Scandal of Faith', kind:'scandal', fn:()=>{ state.faith=Math.max(0,state.faith-2); state.suspicion+=2; log('Scandal of Faith — Faith −2; Suspicion +2.'); }},
+  {name:'Public Denouncement', kind:'scandal', fn:()=>{ state.suspicion+=2; let secLoss=1; if(state.archetype==='false') secLoss=2; state.secrecy=Math.max(0,state.secrecy-secLoss); log(`Public Denouncement — Suspicion +2; Secrecy −${secLoss}.`); }},
+  {name:'Golden Idol Exposed', kind:'scandal', fn:()=>{ if(state.wealth>=3){ state.wealth-=3; log('Golden Idol Exposed — paid 3 Wealth.'); } else if(state.templeStage>0){ state.templeStage--; log('Golden Idol Exposed — temple −1 stage.'); } state.suspicion+=1; }},
+
+  {name:'Cult Rebellion', kind:'betrayal', fn:()=>{ state.followers=Math.max(0,state.followers-2); log('Cult Rebellion — Lose 2 followers.'); }},
+  {name:'False Messiah (Event)', kind:'betrayal', fn:()=>{ const stats=[{k:'faith',v:state.faith},{k:'wealth',v:state.wealth},{k:'fear',v:state.fear},{k:'secrecy',v:state.secrecy}].sort((a,b)=>a.v-b.v); const low=stats[0].k, high=stats[3].k; const tmp=state[low]; state[low]=state[high]; state[high]=tmp; log('False Messiah — Highest/lowest stat swap (temporary).'); }},
+  {name:'Whispers of Betrayal', kind:'betrayal', fn:()=>{ const before=state.secrecy; state.secrecy=0; log(`Whispers of Betrayal — Secrecy set to 0 (was ${before}).`); }},
+];
+function drawRandomEvent(){
+  const ev = EVENT_DECK[Math.floor(Math.random()*EVENT_DECK.length)];
+  log(`Drawing Event: ${ev.name}`);
+  if(state.archetype==='shadow' && !state.oncePerRoundFlags.hiddenNetwork){
+    if(confirm('Shadow Prophet — Negate this event using Hidden Network (once/round)?')){
+      state.oncePerRoundFlags.hiddenNetwork=true; log(`Hidden Network: ${ev.name} negated.`); return;
+    }
+  }
+  ev.fn();
+  if(state.doctrine==='secrecy'){
+    if(confirm('Doctrine of Secrecy — reduce Suspicion by 1 this round?')){ state.suspicion=Math.max(0,state.suspicion-1); log('Doctrine of Secrecy: Suspicion −1.'); }
+  }
+  checkCollapse();
+}
+$('#drawEvent').onclick = ()=>{
+  drawRandomEvent();
+  if(state.suspicion>=state.suspMax){ finalRaid(); } else { state.phase='end'; refresh(); }
+};
+$('#endRound').onclick = ()=>{
+  if(state.templeStage===4){
+    state.gtHeld = (state.gtHeld||0)+1; log(`Grand Temple held: ${state.gtHeld}/3 rounds`);
+    if(state.gtHeld>=3){ win('Dominance Victory — Grand Temple maintained for 3 rounds.'); return; }
+  }
+  startRound();
+};
+
+/* ===== Archetypes / Doctrines ===== */
+function applyArchetypeSetup(){
+  if(state.archetype==='firebrand'){ state.faith+=1; }
+  if(state.archetype==='shadow'){ state.secrecy+=2; }
+  if(state.archetype==='wealthy'){ state.wealth+=2; }
+  if(state.archetype==='iron'){ state.fear+=2; }
+  if(state.archetype==='false'){ state.faith+=1; }
+  if(state.archetype==='scholar'){ state.secrecy+=1; }
+  if(state.archetype==='oracle'){ state.fear+=1; }
+}
+function doctrineUpkeep(){
+  switch(state.doctrine){
+    case 'blood':
+      if(state.followers>0 && confirm('Blood Sacrifice: sacrifice 1 follower for +2 Wealth (OK) or +1 Faith (Cancel)?')){
+        state.followers--; if(confirm('Take +2 Wealth? (Cancel = +1 Faith)')){ state.wealth+=2; } else { state.faith+=1; }
+        state.suspicion++; log('Blood Sacrifice: Suspicion +1.');
+      } break;
+    case 'prosperity':
+      if(state.faith>=1 && confirm('Prosperity Gospel: convert 1 Faith → 1 Wealth this round?')){ state.faith-=1; state.wealth+=1; log('Prosperity: +1 Wealth, −1 Faith.'); }
+      if(state.faith<3 && state.wealth>=2 && Math.random()<0.5){ state.wealth=Math.max(0,state.wealth-2); log('Prosperity backlash: −2 Wealth.'); }
+      break;
+    case 'fear': break;
+    case 'secrecy': break;
+    case 'book': state.faith = Math.max(0, state.faith-1); log('Forbidden Truths upkeep: −1 Faith.'); break;
+    case 'ritual':
+      if(state.followers>=2 && state.templeStage<4 && confirm('Ritual of Blood & Ash: sacrifice 2 followers to complete 1 temple stage? (Suspicion +3)')){
+        state.followers-=2; state.templeStage++; state.suspicion+=3; log('Ritual performed: temple +1 stage, Suspicion +3.');
+      } break;
+  }
+}
+
+/* ===== End / Win / Fail ===== */
+function checkCollapse(){ if(state.followers<=0){ lose('Your cult has collapsed (no followers remain).'); } }
+function finalRaid(){
+  log('!!! Final Raid — Suspicion maxed. Roll Secrecy vs TN10.');
+  const roll = dice()+state.secrecy;
+  if(roll>=10){ log(`You survived the Final Raid (roll ${roll} ≥ 10).`); state.suspicion = state.suspMax-5; state.phase='end'; refresh(); }
+  else{ lose(`Final Raid failed (roll ${roll} < 10). Your cult is destroyed.`); }
+}
+function win(msg){ alert('Victory! '+msg); log('*** VICTORY: '+msg); disableAll(); }
+function lose(msg){ alert('Defeat! '+msg); log('*** DEFEAT: '+msg); disableAll(); }
+function disableAll(){ ['actPreach','actBribe','actIntimidate','assignPray','assignWork','assignGuard','assignHide','buildTemple','skipBuild','drawEvent','endRound'].forEach(id=>$('#'+id).disabled=true); }
+
+/* Init */
+refresh();
+</script>
+</body>
+</html>

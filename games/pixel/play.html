@@ -1,0 +1,2599 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PIXEL CO-OP – Prototype++</title>
+  <style>
+    :root{
+      --bg:#16344d;
+      --panel:#204867;
+      --panel2:#285574;
+      --text:#fff4dc;
+      --muted:#e3d9c2;
+      --accent:#f2a64a;
+      --accent2:#e36a3b;
+      --good:#7bd389;
+      --bad:#ff6b6b;
+      --border:#4c7897;
+      --shadow: rgba(0,0,0,.22);
+      --font: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      --tileSize: 1;
+      --tileA:#2a2a2a;
+      --tileB:#1d1d1d;
+      --tileGlow: rgba(242,166,74,.35);
+      --skyTint: rgba(255,255,255,.06);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:var(--font);
+      background: radial-gradient(circle at 18% 10%, #3e7397 0%, #234b68 38%, var(--bg) 78%);
+      color:var(--text);
+      letter-spacing:.2px;
+      overflow-x:hidden;
+    }
+
+    /* CRT + poster vibe overlay (toggleable) */
+    .crtOn::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background:
+        repeating-linear-gradient(
+          to bottom,
+          rgba(0,0,0,0.0) 0px,
+          rgba(0,0,0,0.0) 2px,
+          rgba(0,0,0,0.16) 3px
+        );
+      mix-blend-mode: multiply;
+      opacity:.22;
+      z-index:9998;
+    }
+    .crtOn::after{
+      content:"";
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      background: radial-gradient(circle at 50% 40%, rgba(255,255,255,0.08), rgba(0,0,0,0.45) 65%, rgba(0,0,0,0.75));
+      opacity:.32;
+      z-index:9999;
+    }
+    .crtOn main, .crtOn header{
+      filter: contrast(1.02) saturate(1.04) brightness(1.08);
+    }
+
+    header{
+      padding:16px 16px 10px;
+      display:flex;
+      align-items:flex-end;
+      justify-content:space-between;
+      gap:12px;
+      border-bottom:2px solid var(--border);
+      background: linear-gradient(180deg, rgba(0,0,0,.15), rgba(0,0,0,0));
+    }
+    .brand{display:flex;flex-direction:column;gap:4px}
+    .brand h1{
+      margin:0;
+      font-size:26px;
+      color:var(--text);
+      text-shadow: 0 2px 0 rgba(0,0,0,.35);
+      letter-spacing:1px;
+    }
+    .brand small{color:var(--muted)}
+    .topbars{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+    .meter{
+      width:160px;
+      background: rgba(255,255,255,.04);
+      border:2px solid var(--border);
+      border-radius:8px;
+      padding:8px 8px 6px;
+      box-shadow:0 6px 14px var(--shadow);
+    }
+    .meter .label{
+      display:flex;
+      justify-content:space-between;
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:6px;
+    }
+    .bar{
+      height:10px;
+      border-radius:6px;
+      overflow:hidden;
+      background: rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.08);
+    }
+    .bar > i{display:block;height:100%;width:50%;background: linear-gradient(90deg, var(--accent), var(--accent2));}
+    .bar.good > i{ background: linear-gradient(90deg, #5ad68b, #2eb872); }
+    .bar.bad > i{ background: linear-gradient(90deg, #ff7b7b, #ff4d4d); }
+
+    main{
+      display:grid;
+      grid-template-columns: 380px 1fr 380px;
+      gap:12px;
+      padding:12px;
+      max-width: 1380px;
+      margin:0 auto;
+    }
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.12));
+      border:2px solid var(--border);
+      border-radius:14px;
+      padding:12px;
+      box-shadow:0 10px 24px var(--shadow);
+    }
+    .panel h2{
+      margin:0 0 10px;
+      font-size:14px;
+      color:var(--text);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .badge{
+      font-size:11px;
+      padding:4px 8px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.25);
+      color:var(--muted);
+      white-space:nowrap;
+    }
+    .row{
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      padding:8px 10px;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:10px;
+      background: rgba(0,0,0,.2);
+      margin-bottom:8px;
+    }
+    .row strong{font-size:12px}
+    .row small{color:var(--muted); font-size:11px; line-height:1.3}
+    .btn{
+      appearance:none;
+      border:2px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      border-radius:10px;
+      padding:8px 10px;
+      cursor:pointer;
+      font-family:var(--font);
+      font-size:12px;
+      box-shadow:0 6px 14px var(--shadow);
+      transition: transform .06s ease, background .12s ease;
+      white-space:nowrap;
+    }
+    .btn:hover{ background: rgba(255,255,255,.09); }
+    .btn:active{ transform: translateY(1px); }
+    .btn.primary{ border-color: rgba(242,166,74,.55); background: rgba(242,166,74,.12); }
+    .btn.danger{ border-color: rgba(255,107,107,.55); background: rgba(255,107,107,.10); }
+    .btn.good{ border-color: rgba(123,211,137,.55); background: rgba(123,211,137,.10); }
+    .btn:disabled{ opacity:.55; cursor:not-allowed; }
+
+    select{
+      width:100%;
+      padding:10px;
+      border-radius:10px;
+      background: rgba(0,0,0,.25);
+      border:1px solid rgba(255,255,255,.14);
+      color: var(--text);
+      font-family:var(--font);
+      outline:none;
+    }
+
+    .gridWrap{display:flex;flex-direction:column;gap:10px}
+    .gridTop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+    .gridTop .hint{color:var(--muted);font-size:12px;line-height:1.35}
+    .grid{
+      position:relative;
+      overflow:hidden;
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap:6px;
+      background: rgba(0,0,0,.18);
+      border:2px solid var(--border);
+      border-radius:14px;
+      padding:10px;
+      min-height: 560px;
+    }
+    .grid::before{
+      content:"";
+      position:absolute; inset:0;
+      background: radial-gradient(circle at 25% 20%, var(--skyTint), rgba(0,0,0,0) 60%);
+      pointer-events:none;
+      opacity:.9;
+    }
+
+    .tile{
+      position:relative;
+      aspect-ratio: 1/1;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, color-mix(in srgb, var(--tileA) 70%, #ffffff 5%), var(--tileB));
+      box-shadow: inset 0 0 0 2px rgba(0,0,0,.12);
+      cursor:pointer;
+      overflow:hidden;
+      user-select:none;
+    }
+    /* Pixel-art placeholder texture */
+    .tile::before{
+      content:"";
+      position:absolute; inset:0;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.06) 0 1px, transparent 1px 6px),
+        linear-gradient(180deg, rgba(255,255,255,.04) 0 1px, transparent 1px 6px);
+      background-size: 6px 6px;
+      opacity:.35;
+      pointer-events:none;
+    }
+    .tile.empty{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(0,0,0,.20));
+    }
+    .tile:hover{ outline:2px solid rgba(242,166,74,.35); }
+    .glyph{
+      position:absolute;
+      inset:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:18px;
+      text-shadow: 0 2px 0 rgba(0,0,0,.35);
+      transform: translateY(-2px);
+    }
+    .tile .name{
+      position:absolute;
+      left:6px; right:6px; bottom:6px;
+      font-size:9px;
+      color:rgba(246,231,199,.85);
+      text-align:center;
+      padding:2px 4px;
+      border-radius:6px;
+      background: rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.08);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .tile .lvl{
+      position:absolute;
+      top:6px;
+      right:6px;
+      font-size:10px;
+      padding:2px 6px;
+      border-radius:999px;
+      background: rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.08);
+      color:var(--muted);
+    }
+    .tile .tag{
+      position:absolute;
+      top:6px; left:6px;
+      font-size:10px;
+      padding:2px 6px;
+      border-radius:999px;
+      background: rgba(0,0,0,.35);
+      border:1px solid rgba(255,255,255,.08);
+      color:var(--muted);
+    }
+
+    .toast{
+      min-height:44px;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.25);
+      color: var(--muted);
+      font-size:12px;
+      line-height:1.35;
+    }
+    .toast strong{ color: var(--text); }
+    .kpis{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:8px;
+      margin-top:10px;
+    }
+    .kpi{
+      padding:10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.08);
+      background: rgba(0,0,0,.20);
+      font-size:12px;
+    }
+    .kpi .v{ font-size:16px; color: var(--text); margin-top:4px; }
+    .sep{ height:1px; background: rgba(255,255,255,.10); margin:10px 0; }
+    .mono{ font-variant-numeric: tabular-nums; }
+
+    /* Research tree */
+    .tree{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:8px;
+    }
+    .node{
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:12px;
+      padding:10px;
+      background: rgba(0,0,0,.20);
+    }
+    .nodeTop{
+      display:flex; align-items:flex-start; justify-content:space-between; gap:10px;
+    }
+    .node .title{font-size:12px}
+    .node .meta{font-size:11px;color:var(--muted);margin-top:4px;line-height:1.35}
+    .node.locked{opacity:.78}
+    .node.unlocked{border-color: rgba(123,211,137,.20)}
+    .node .req{color: rgba(242,166,74,.9)}
+    .nodeActions{margin-top:8px; display:flex; gap:8px; flex-wrap:wrap}
+
+    /* Dilemma modal */
+    .modalBack{
+      position:fixed; inset:0; background: rgba(0,0,0,.55);
+      display:none; align-items:center; justify-content:center;
+      z-index:10000;
+      padding:14px;
+    }
+    .modal{
+      width:min(720px, 100%);
+      border:2px solid var(--border);
+      border-radius:16px;
+      background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(0,0,0,.20));
+      box-shadow: 0 18px 40px rgba(0,0,0,.55);
+      padding:14px;
+    }
+    .modal h3{margin:0 0 8px; font-size:14px}
+    .modal p{margin:0 0 10px; color:var(--muted); font-size:12px; line-height:1.45}
+    .modal .choices{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
+
+    
+    /* Mini-map */
+    .minimapWrap{display:flex; gap:10px; align-items:flex-start; justify-content:space-between;}
+    .minimap{
+      width:156px; height:156px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.18);
+      display:grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: repeat(12, 1fr);
+      gap:1px;
+      padding:6px;
+    }
+    .mmCell{border-radius:2px;background:rgba(255,255,255,.05)}
+
+    /* Log feed */
+    .log{
+      height: 220px;
+      overflow:auto;
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:12px;
+      background: rgba(0,0,0,.20);
+      padding:8px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .logItem{
+      font-size:11px;
+      color:var(--muted);
+      line-height:1.35;
+      padding:6px 8px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.07);
+      background: rgba(0,0,0,.18);
+    }
+    .logItem strong{ color: var(--text); }
+    .logItem .t{ color: rgba(242,166,74,.85); }
+
+    /* Pixel icon */
+    .pxi{width:16px;height:16px;image-rendering:pixelated;vertical-align:-3px;margin-right:6px;filter:drop-shadow(0 1px 0 rgba(0,0,0,.35));}
+    @media (max-width: 1150px){
+      main{ grid-template-columns: 1fr; }
+      .grid{ min-height:auto; }
+      .meter{ width: 150px; }
+    }
+  
+
+    /* Resource box (Credits/Metal) */
+    .resBox{
+      width:160px;
+      background: rgba(255,255,255,.04);
+      border:2px solid var(--border);
+      border-radius:8px;
+      padding:10px 10px 8px;
+      box-shadow:0 6px 14px var(--shadow);
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+    .resRow{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12px;color:var(--muted)}
+    .resRow strong{color:var(--text)}
+
+    /* Terrain map styling */
+    .tile.terrain-dust{ background: linear-gradient(180deg, rgba(255,170,120,.16), rgba(0,0,0,.20)), linear-gradient(180deg, color-mix(in srgb, var(--tileA) 70%, #ffffff 5%), var(--tileB)); }
+    .tile.terrain-ice{ background: linear-gradient(180deg, rgba(160,220,255,.18), rgba(0,0,0,.20)), linear-gradient(180deg, color-mix(in srgb, var(--tileA) 70%, #ffffff 5%), var(--tileB)); }
+    .tile.terrain-jungle{ background: linear-gradient(180deg, rgba(120,255,160,.14), rgba(0,0,0,.22)), linear-gradient(180deg, color-mix(in srgb, var(--tileA) 70%, #ffffff 5%), var(--tileB)); }
+    .tile.terrain-rock{ background: linear-gradient(180deg, rgba(255,255,255,.10), rgba(0,0,0,.26)), linear-gradient(180deg, color-mix(in srgb, var(--tileA) 70%, #ffffff 5%), var(--tileB)); }
+    .tile.terrain-water{ background: linear-gradient(180deg, rgba(102,208,255,.22), rgba(0,0,0,.32)), linear-gradient(180deg, color-mix(in srgb, var(--tileA) 70%, #ffffff 5%), var(--tileB)); }
+    .tile.terrain-void{ background: linear-gradient(180deg, rgba(178,140,255,.12), rgba(0,0,0,.32)), linear-gradient(180deg, color-mix(in srgb, var(--tileA) 70%, #ffffff 5%), var(--tileB)); }
+    .tile.blocked{ cursor:not-allowed; filter:saturate(.7) brightness(.92); }
+    .tile.blocked:hover{ outline:2px dashed rgba(255,255,255,.18); }
+    .tile .terrainLabel{
+      position:absolute; left:6px; right:6px; top:50%;
+      transform:translateY(-50%);
+      font-size:9px; text-align:center;
+      color:rgba(246,231,199,.78);
+      opacity:.75;
+      pointer-events:none;
+    }
+
+
+
+    /* Currency HUD (responsive dock + collapse + ticks) */
+    #currencyHUD{
+      position:fixed;
+      top: 12px; /* moved up */
+      right: 12px; /* moved right */
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      z-index:60;
+      pointer-events:auto;
+    }
+    #currencyHUD.dock-left{
+      left: calc(12px + env(safe-area-inset-left, 0px));
+      right: auto;
+    }
+    #currencyHUD.dock-lower{
+      top: 86px;
+    }
+    #currencyHUD .hudHead{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      user-select:none;
+      cursor:pointer;
+      padding:8px 10px;
+      background:rgba(0,0,0,.45);
+      border:2px solid var(--border);
+      border-radius:10px;
+      box-shadow:0 6px 14px var(--shadow);
+    }
+    #currencyHUD .hudHead .title{
+      font-size:12px;
+      color:var(--muted);
+      letter-spacing:.4px;
+    }
+    #currencyHUD .hudHead .toggle{
+      width:22px;height:22px;
+      display:grid;place-items:center;
+      border-radius:8px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      font-size:12px;
+      color:var(--text);
+    }
+    #currencyHUD .hudBody{
+      display:flex;
+      gap:10px;
+    }
+    #currencyHUD.collapsed .hudBody{ display:none; }
+
+    .currency{
+      min-width:140px;
+      background:rgba(0,0,0,.45);
+      border:2px solid var(--border);
+      border-radius:10px;
+      padding:8px 10px;
+      box-shadow:0 6px 14px var(--shadow);
+      font-size:12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .currency span{color:var(--muted)}
+    .currency strong{color:var(--text)}
+
+    /* Floating tick */
+    .tick{
+      position:fixed;
+      z-index:70;
+      font-size:12px;
+      padding:6px 8px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(0,0,0,.45);
+      color:var(--text);
+      pointer-events:none;
+      box-shadow:0 10px 24px var(--shadow);
+      animation: tickFloat 900ms ease-out forwards;
+    }
+    .tick.good{ border-color: rgba(123,211,137,.45); }
+    .tick.bad{ border-color: rgba(255,107,107,.45); }
+
+    @keyframes tickFloat{
+      0%   { transform: translateY(0) scale(1); opacity: 0; }
+      12%  { opacity: 1; }
+      100% { transform: translateY(-22px) scale(1.02); opacity: 0; }
+    }
+
+    /* Responsive docking rules */
+    @media (max-width: 1180px){
+      #currencyHUD{ top: 92px; right: 12px; }
+    }
+    @media (max-width: 860px){
+      #currencyHUD{ top: auto; bottom: calc(12px + env(safe-area-inset-bottom, 0px)); right: 12px; }
+      #currencyHUD .hudBody{ flex-direction:column; }
+      .currency{ min-width:150px; }
+    }
+
+    /* Brand poster art */
+    .brand{
+      display:flex;
+      align-items:left;
+      gap:14px;
+    }
+    .brandArt{
+      width:56px;
+      height:56px;
+      border-radius:10px;
+      border:2px solid var(--border);
+      box-shadow:0 8px 18px var(--shadow);
+      image-rendering:pixelated;
+    }
+    .brandText h1{ margin:0; }
+    .brandText small{ display:block; margin-top:4px; }
+
+    /* Currency HUD drag affordance */
+    #currencyHUD.dragging{ opacity:.95; filter: saturate(1.05) brightness(1.02); }
+    #currencyHUD .hudHead{ touch-action:none; }
+    #currencyHUD .hudHead:active{ cursor:grabbing; }
+
+  
+    /* Visibility enhancement */
+    body {
+      background-color: var(--bg);
+    }
+
+    header {
+      background:
+        linear-gradient(
+          180deg,
+          rgba(64, 111, 145, 0.94),
+          rgba(31, 72, 101, 0.92)
+        );
+    }
+
+    .panel {
+      background:
+        linear-gradient(
+          180deg,
+          rgba(66, 111, 143, 0.96),
+          rgba(36, 77, 106, 0.96)
+        );
+      border-color: rgba(139, 189, 220, 0.72);
+    }
+
+    .row,
+    .node,
+    .kpi,
+    .log,
+    .logItem,
+    .toast,
+    .minimap,
+    .modal,
+    select {
+      background: rgba(20, 54, 78, 0.72);
+      border-color: rgba(161, 202, 226, 0.32);
+    }
+
+    .grid {
+      background: rgba(31, 72, 101, 0.72);
+      border-color: rgba(139, 189, 220, 0.72);
+    }
+
+    .tile.empty {
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.13),
+          rgba(24, 59, 82, 0.34)
+        );
+    }
+
+    .tile {
+      border-color: rgba(255, 255, 255, 0.24);
+      box-shadow:
+        inset 0 0 0 2px rgba(255, 255, 255, 0.04),
+        0 2px 5px rgba(0, 0, 0, 0.14);
+    }
+
+    .btn {
+      background: rgba(255, 255, 255, 0.13);
+      border-color: rgba(255, 255, 255, 0.28);
+    }
+
+    .btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn.primary {
+      background: rgba(242, 166, 74, 0.25);
+      border-color: rgba(255, 194, 112, 0.82);
+    }
+
+    .btn.good {
+      background: rgba(123, 211, 137, 0.2);
+      border-color: rgba(151, 231, 164, 0.72);
+    }
+
+    .btn.danger {
+      background: rgba(255, 107, 107, 0.18);
+      border-color: rgba(255, 139, 139, 0.72);
+    }
+
+    .meter,
+    .resBox,
+    #currencyHUD .hudHead,
+    .currency {
+      background: rgba(24, 61, 87, 0.94);
+      border-color: rgba(139, 189, 220, 0.72);
+    }
+
+    .bar {
+      background: rgba(4, 24, 39, 0.52);
+      border-color: rgba(255, 255, 255, 0.18);
+    }
+
+    .badge,
+    .tile .name,
+    .tile .lvl,
+    .tile .tag {
+      background: rgba(15, 44, 65, 0.76);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    small,
+    .row small,
+    .node .meta,
+    .logItem,
+    .gridTop .hint {
+      color: #eee3cc;
+    }
+
+  </style>
+</head>
+<body>
+<div id="currencyHUD">
+  <div class="hudHead" id="currencyHead" title="Click to collapse/expand">
+    <div class="title mono">WALLET</div>
+    <div class="toggle mono" id="currencyToggle">−</div>
+  </div>
+  <div class="hudBody">
+    <div class="currency"><span class="mono">CREDITS</span><strong class="mono" id="creditsTotal">0</strong></div>
+    <div class="currency"><span class="mono">METAL</span><strong class="mono" id="metalTotal">0</strong></div>
+  </div>
+</div>
+
+<header>
+  <div class="brand">
+    <img class="brandArt" src="Pixel.png" /> 
+    <img class="brandArt" src="../../assets/logo.png" />
+    <div class="brandText">
+      <h1>PIXEL CO-OP</h1>
+      <small class="mono">Prototype++: roles • research • vehicles • districts • contracts/dilemmas • CRT vibe</small>
+    </div>
+  </div>
+  <div class="topbars" id="topbars"></div>
+</header>
+
+<main>
+  <!-- LEFT -->
+  <section class="panel">
+    <h2> ROLE (UI-only) <span class="badge mono" id="roleBadge">Role: Engineer</span></h2>
+    <div class="row" style="flex-direction:column;align-items:stretch">
+      <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+        <div>
+          <strong id="roleName">Engineer</strong><br/>
+          <small id="roleDesc">Build/upgrade efficiency. Less power drain and cheaper upgrades.</small>
+        </div>
+        <button class="btn" id="crtBtn">CRT: On</button>
+      </div>
+      <select id="roleSelect" aria-label="role select"></select>
+      <small id="roleBonusText" class="mono" style="color:var(--muted);margin-top:6px;line-height:1.35"></small>
+    </div>
+
+    <div class="sep"></div>
+
+    <h2>️ BUILD MENU <span class="badge" id="planetBadge">Planet: Red Dune-7</span></h2>
+    <div id="buildList"></div>
+
+    <div class="sep"></div>
+
+    <h2>⚙️ ACTIONS <span class="badge mono" id="cycleBadge">Cycle: 0</span></h2>
+
+    <div class="row">
+      <div>
+        <strong>⏱️ Simulation</strong><br />
+        <small id="simState">Running (1 cycle/sec)</small>
+      </div>
+      <button class="btn primary" id="toggleSimBtn">Pause</button>
+    </div>
+
+    <div class="row">
+      <div>
+        <strong> Remove Tool</strong><br />
+        <small>Click a tile to demolish (refund partial metal)</small>
+      </div>
+      <button class="btn" id="demolishBtn">Off</button>
+    </div>
+
+    <div class="row">
+      <div>
+        <strong>️ Rover Ops</strong><br />
+        <small id="roverText">No rover owned.</small>
+      </div>
+      <button class="btn good" id="surveyBtn" disabled>Survey</button>
+    </div>
+
+    <div class="row">
+      <div>
+        <strong> Launch</strong><br />
+        <small>City-Ready + Launch Complex required</small>
+      </div>
+      <button class="btn" id="launchBtn" disabled>Launch</button>
+    </div>
+
+    <div class="toast" id="toast">
+      <strong>Tip:</strong> Districts + adjacency = faster stability. Research unlocks everything.
+    </div>
+  </section>
+
+  <!-- CENTER -->
+  <section class="gridWrap panel">
+    <div class="gridTop">
+      <div class="hint">
+        <strong>Click tiles</strong> to place the selected building.<br/>
+        <span class="mono">Shift+Click</span> a building tile to upgrade (if unlocked).<br/>
+        <span class="mono">Adjacency:</span> place buildings next to Districts for bonuses.
+      </div>
+      <div class="badge mono" id="goalBadge">Goal: City-Ready streak 0/20</div>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <!-- RIGHT -->
+  <section class="panel">
+    <h2><img class="pxi" id="icoStar" alt="Co-op" />STELLAR COOPERATIVE <span class="badge mono" id="repBadge">Rep: Vendor</span></h2>
+
+    <div class="row">
+      <div>
+        <strong><img class="pxi" id="icoTx" alt="Transmission" />Transmission</strong><br />
+        <small id="transmissionText">Kade: “Bring me data. I’ll bring you blueprints.”</small>
+      </div>
+      <button class="btn primary" id="claimContractBtn">New Contract</button>
+    </div>
+
+    <div class="sep"></div>
+
+    <h2><img class="pxi" id="icoResearch" alt="Research" />RESEARCH (Kade) <span class="badge mono" id="rpBadge">RP: 0</span></h2>
+    <div class="tree" id="researchTree"></div>
+
+    <div class="sep"></div>
+
+    <h2><img class="pxi" id="icoImports" alt="Imports" />IMPORTS <span class="badge">Buy with Credits</span></h2>
+    <div id="imports"></div>
+
+    
+    <div class="sep"></div>
+
+    <h2><img class="pxi" id="icoMinimap" alt="Mini-map" />MINI-MAP <span class="badge">12×12</span></h2>
+    <div class="minimapWrap">
+      <div class="minimap" id="minimap"></div>
+      <div style="flex:1">
+        <div class="badge" style="margin-bottom:8px">Legend</div>
+        <small class="mono" style="display:block;color:var(--muted);line-height:1.5">
+          Core • Power • Life • Food • Ind • Res • Civ • Dist • Cursor
+        </small>
+      </div>
+    </div>
+
+    <div class="sep"></div>
+
+    <h2><img class="pxi" id="icoLog" alt="Co-op log" />CO-OP LOG <span class="badge">Callouts</span></h2>
+    <div class="log" id="log"></div>
+
+<div class="sep"></div>
+
+    <h2><img class="pxi" id="icoKPI" alt="KPIs" />COLONY KPIs <span class="badge">City Readiness</span></h2>
+    <div class="kpis">
+      <div class="kpi"><div>Population</div><div class="v mono" id="kpiPop">0</div></div>
+      <div class="kpi"><div>Districts</div><div class="v mono" id="kpiDistricts">0</div></div>
+      <div class="kpi"><div>Stability</div><div class="v mono" id="kpiStable">No</div></div>
+      <div class="kpi"><div>Streak</div><div class="v mono" id="kpiStreak">0</div></div>
+    </div>
+  </section>
+</main>
+
+<!-- Dilemma Modal -->
+<div class="modalBack" id="modalBack">
+  <div class="modal">
+    <h3 id="modalTitle">Dilemma</h3>
+    <p id="modalBody">...</p>
+    <div class="choices" id="modalChoices"></div>
+  </div>
+</div>
+
+<script>
+/**
+ * PIXEL CO-OP – Prototype++
+ * Additions:
+ * - Roles (UI-only) with bonuses
+ * - Research tree with blueprint unlocks (Kade)
+ * - Vehicles (Rover) that boosts mining + survey action
+ * - District tiles with adjacency bonuses
+ * - Contracts with dilemmas + branching rewards
+ * - CRT + pixel placeholder tile feel
+ */
+
+// ---------- Helpers ----------
+const el = (id)=>document.getElementById(id);
+const clamp = (n,min,max)=>Math.max(min, Math.min(max,n));
+const fmt = (n)=> (Math.round(n*10)/10).toString();
+const rand = (a,b)=> Math.floor(Math.random()*(b-a+1))+a;
+
+/* ---------- Pixel sprite placeholders (inline SVG data URIs) ---------- */
+function svgData(svg){
+  const s = svg.replace(/\n/g,'').replace(/\s\s+/g,' ').trim();
+  return "data:image/svg+xml;charset=utf-8," + encodeURIComponent(s);
+}
+function spriteSVG(label, primary="#f2a64a", secondary="#0f2b43"){
+  return svgData(`
+    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" shape-rendering="crispEdges">
+      <rect width="32" height="32" fill="${secondary}"/>
+      <rect x="2" y="2" width="28" height="28" fill="none" stroke="rgba(255,255,255,.22)" stroke-width="2"/>
+      <rect x="6" y="6" width="20" height="4" fill="${primary}"/>
+      <rect x="6" y="12" width="20" height="4" fill="${primary}"/>
+      <rect x="6" y="18" width="20" height="4" fill="${primary}"/>
+      <rect x="6" y="24" width="20" height="2" fill="rgba(255,255,255,.18)"/>
+      <text x="16" y="20" font-family="monospace" font-size="10" text-anchor="middle" fill="rgba(0,0,0,.55)">${label}</text>
+    </svg>
+  `);
+}
+const ICONS = {
+  star: spriteSVG("★","#f2a64a","#0f2b43"),
+  tx: spriteSVG("TX","#66d0ff","#0f2b43"),
+  research: spriteSVG("RP","#b28cff","#0f2b43"),
+  box: spriteSVG("BX","#c9bfa7","#0f2b43"),
+  chart: spriteSVG("KP","#ffcc66","#0f2b43"),
+  role: spriteSVG("RL","#f2a64a","#0f2b43"),
+  build: spriteSVG("BL","#f2a64a","#0f2b43"),
+  actions: spriteSVG("AC","#f2a64a","#0f2b43"),
+  minimap: spriteSVG("MM","#8cf29d","#0f2b43"),
+  log: spriteSVG("LG","#e36a3b","#0f2b43"),
+  ok: spriteSVG("OK","#7bd389","#0f2b43"),
+  warn: spriteSVG("!!","#ff6b6b","#0f2b43"),
+  info: spriteSVG("i","#66d0ff","#0f2b43"),
+  rocket: spriteSVG(">>","#f2a64a","#0f2b43"),
+};
+function px(name, alt=""){ return `<img class="pxi" alt="${alt||name}" src="${ICONS[name]||ICONS.info}">`; }
+
+/* ---------- Co-op log feed ---------- */
+const LOG_MAX = 80;
+function logEvent(text, tone="neutral"){
+  const log = el("log");
+  if(!log) return;
+  const t = new Date();
+  const stamp = `${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}:${String(t.getSeconds()).padStart(2,'0')}`;
+  const div = document.createElement("div");
+  div.className = "logItem";
+  const tag = tone==="bad" ? "ALERT" : tone==="good" ? "OK" : "INFO";
+  div.innerHTML = `<span class="t mono">[${stamp}]</span> <strong>${tag}</strong> — ${text}`;
+  log.prepend(div);
+  while(log.children.length > LOG_MAX) log.removeChild(log.lastChild);
+}
+
+/* ---------- Mini-map ---------- */
+const TAG_COLOR = {
+  CORE:"rgba(242,166,74,.90)",
+  PWR:"rgba(102,208,255,.90)",
+  LIFE:"rgba(140,242,157,.90)",
+  FOOD:"rgba(120,255,102,.90)",
+  IND:"rgba(201,191,167,.90)",
+  RES:"rgba(255,204,102,.90)",
+  CIV:"rgba(178,140,255,.90)",
+  DIST:"rgba(255,123,123,.90)",
+};
+function renderMinimap(){
+  const mm = el("minimap");
+  if(!mm) return;
+  mm.innerHTML = "";
+  for(let i=0;i<grid.length;i++){
+    const d = document.createElement("div");
+    d.className="mmCell";
+    const cell = grid[i];
+    if(cell){
+      d.style.background = (TAG_COLOR[BUILDINGS[cell.key].tag] || "rgba(255,255,255,.12)");
+    } else {
+      const terr = terrain[i] || {t:"dust"};
+      d.style.background = terr.t==="water" ? "rgba(102,208,255,.35)" :
+                           terr.t==="ice" ? "rgba(160,220,255,.22)" :
+                           terr.t==="jungle" ? "rgba(120,255,160,.22)" :
+                           terr.t==="rock" ? "rgba(255,255,255,.14)" :
+                           terr.t==="void" ? "rgba(178,140,255,.16)" :
+                           "rgba(255,170,120,.18)";
+    }
+    if(i===state.cursorIdx){
+      d.style.boxShadow="0 0 0 2px rgba(255,255,255,.65) inset";
+      d.style.borderRadius="3px";
+    }
+    mm.appendChild(d);
+  }
+}
+
+// ---------- Planets ----------
+const PLANETS = [
+  { name:"Red Dune-7", rule:"Dust storms reduce Solar output sometimes.", palette:{ tileA:"#3b2720", tileB:"#231514", tileGlow:"rgba(242,166,74,.35)", skyTint:"rgba(255,146,86,.10)" }, solarPenaltyChance: 0.20, solarPenaltyMult: 0.50 },
+  { name:"Cryo Moon Eos", rule:"Solar weak; Condensers boosted.", palette:{ tileA:"#1f2c3d", tileB:"#101a24", tileGlow:"rgba(120,190,255,.40)", skyTint:"rgba(120,190,255,.10)" }, solarPenaltyChance: 0.30, solarPenaltyMult: 0.70, condenserBonusMult: 1.60 },
+  { name:"Verdant K-2", rule:"Spores lower morale if no Clinic.", palette:{ tileA:"#1f3a2a", tileB:"#122016", tileGlow:"rgba(120,255,140,.35)", skyTint:"rgba(120,255,140,.08)" }, sporeChance: 0.20 },
+  { name:"Basalt Prime", rule:"Quakes damage buildings occasionally.", palette:{ tileA:"#2b2b2f", tileB:"#151518", tileGlow:"rgba(255,120,120,.30)", skyTint:"rgba(255,120,120,.07)" }, quakeChance: 0.14 },
+  { name:"Aurelia-9", rule:"Imports cost more; industry matters.", palette:{ tileA:"#2b2f2f", tileB:"#141616", tileGlow:"rgba(201,191,167,.30)", skyTint:"rgba(201,191,167,.08)" }, importCostMult: 1.20 },
+  { name:"Stormreach", rule:"Storms frequent; Solar unreliable.", palette:{ tileA:"#1a2b3e", tileB:"#0f1721", tileGlow:"rgba(120,190,255,.33)", skyTint:"rgba(120,190,255,.10)" }, solarPenaltyChance: 0.35, solarPenaltyMult: 0.40 },
+  { name:"Hollow World Ix", rule:"No sun. Solar nearly useless.", palette:{ tileA:"#2a2035", tileB:"#14101a", tileGlow:"rgba(178,140,255,.30)", skyTint:"rgba(178,140,255,.08)" }, solarPenaltyChance: 0.60, solarPenaltyMult: 0.15 },
+  { name:"Radiant Expanse", rule:"Radiation spikes reduce morale.", palette:{ tileA:"#2a2f1f", tileB:"#151a10", tileGlow:"rgba(255,210,90,.30)", skyTint:"rgba(255,210,90,.08)" }, radChance: 0.18 },
+  { name:"Oceanus-3", rule:"Build limit tighter (platform life).", palette:{ tileA:"#1b2c3a", tileB:"#0f1b23", tileGlow:"rgba(102,208,255,.32)", skyTint:"rgba(102,208,255,.10)" }, buildLimit: 80 },
+  { name:"Unity Prime", rule:"All hazards combined.", palette:{ tileA:"#2d2330", tileB:"#141018", tileGlow:"rgba(242,166,74,.30)", skyTint:"rgba(255,255,255,.06)" }, solarPenaltyChance: 0.30, solarPenaltyMult: 0.50, sporeChance: 0.12, quakeChance: 0.10, radChance: 0.10 },
+];
+const getPlanet = ()=> PLANETS[state.planetIndex];
+function applyPlanetPalette(){
+  const p = getPlanet().palette || {};
+  if(p.tileA) document.documentElement.style.setProperty("--tileA", p.tileA);
+  if(p.tileB) document.documentElement.style.setProperty("--tileB", p.tileB);
+  if(p.tileGlow) document.documentElement.style.setProperty("--tileGlow", p.tileGlow);
+  if(p.skyTint) document.documentElement.style.setProperty("--skyTint", p.skyTint);
+}
+
+
+// ---------- Roles (UI-only) ----------
+const ROLES = {
+  Engineer: {
+    name:"Engineer",
+    desc:"Build/upgrade efficiency. Less power drain and cheaper upgrades.",
+    bonuses:[
+      "Power consumption -10% (buildings)",
+      "Upgrade costs -15% (metal/credits)"
+    ],
+    mods: { powerUseMult: 0.90, upgradeCostMult: 0.85, researchGainMult: 1.10 }
+  },
+  Prospector: {
+    name:"Prospector",
+    desc:"Resource scouting & extraction. Mining and rover ops are stronger.",
+    bonuses:[
+      "Mining output +25%",
+      "Rover Survey yields +30%"
+    ],
+    mods: { miningMult: 1.25, surveyMult: 1.30 }
+  },
+  Quartermaster: {
+    name:"Quartermaster",
+    desc:"Trade, contracts, and logistics. Imports cheaper, contracts pay more.",
+    bonuses:[
+      "Import costs -12%",
+      "Contract rewards +15%"
+    ],
+    mods: { importCostMult: 0.88, contractRewardMult: 1.15 }
+  }
+};
+
+// ---------- State ----------
+let state = {
+  planetIndex: 0,
+  cycle: 0,
+  running: true,
+  demolishMode: false,
+  crt: false,
+
+  // resources
+  air: 10,
+  water: 10,
+  food: 10,
+  power: 0,
+  metal: 45,
+  credits: 80,
+  morale: 75,
+  pop: 4,
+
+  // progression
+  stableStreak: 0,
+  rep: 1, // 0 probation,1 vendor,2 partner,3 trusted,4 pioneer
+  roleKey: "Engineer",
+
+  // research
+  rp: 0,
+  unlocked: new Set(["LandingPad","Solar","Battery","Scrubber","Condenser","Hydro","Mine","Habitat"]), // baseline
+  unlockedUpgrades: new Set(["Solar","Scrubber","Condenser","Hydro","Mine","Habitat","Battery","Refinery"]), // upgrade eligibility (still requires each building maxLevel>1)
+
+  // vehicles
+  roverOwned: false,
+
+  // contracts
+  contract: null,
+  contractActive: false,
+};
+
+// ---------- Reputation ----------
+const REP_NAMES = ["Probation","Vendor","Partner","Trusted","Pioneer"];
+
+// ---------- Buildings ----------
+/**
+ * Outputs are per-cycle deltas.
+ * District adjacency bonuses are applied dynamically.
+ */
+const BUILDINGS = {
+  LandingPad: { key:"LandingPad", name:"Landing Pad", glyph:"", tag:"CORE",
+    cost:{ metal:0, credits:0 }, outputs:{}, maxLevel:2,
+    upgradeCost:[ null, { metal:20, credits:200 } ],
+    upgradeName:[ null, "Trade Pad" ],
+    desc:"Enables imports/exports. Upgrade improves trade efficiency."
+  },
+  Solar: { key:"Solar", name:"Solar Array", glyph:"☀️", tag:"PWR",
+    cost:{ metal:10, credits:0 }, outputs:{ power:+10 }, maxLevel:2,
+    upgradeCost:[ null, { metal:15, credits:300 } ],
+    upgradeName:[ null, "Solar Grid" ],
+    desc:"+10 power. Storms can reduce output."
+  },
+  Battery: { key:"Battery", name:"Battery Bank", glyph:"", tag:"PWR",
+    cost:{ metal:12, credits:0 }, outputs:{}, maxLevel:2,
+    upgradeCost:[ null, { metal:10, credits:150 } ],
+    upgradeName:[ null, "Smart Battery" ],
+    desc:"Increases power buffer. Upgrade increases buffer further."
+  },
+  Scrubber: { key:"Scrubber", name:"O2 Scrubber", glyph:"️", tag:"LIFE",
+    cost:{ metal:8, credits:0 }, outputs:{ air:+10, power:-5 }, maxLevel:2,
+    upgradeCost:[ null, { metal:10, credits:250 } ],
+    upgradeName:[ null, "Algae Scrubber" ],
+    desc:"+Air, uses power. Upgrade improves efficiency."
+  },
+  Condenser: { key:"Condenser", name:"Water Condenser", glyph:"", tag:"LIFE",
+    cost:{ metal:10, credits:0 }, outputs:{ water:+8, power:-5 }, maxLevel:2,
+    upgradeCost:[ null, { metal:10, credits:200 } ],
+    upgradeName:[ null, "Purification Unit" ],
+    desc:"+Water, uses power. Ice worlds boost output."
+  },
+  Hydro: { key:"Hydro", name:"Hydroponics", glyph:"", tag:"FOOD",
+    cost:{ metal:12, credits:0 }, outputs:{ food:+10, water:-3, power:-6, morale:+0.2 }, maxLevel:2,
+    upgradeCost:[ null, { metal:15, credits:400 } ],
+    upgradeName:[ null, "Vertical Farm" ],
+    desc:"+Food, uses water/power. Upgrade boosts food and morale."
+  },
+  Mine: { key:"Mine", name:"Mining Drill", glyph:"⛏️", tag:"IND",
+    cost:{ metal:10, credits:0 }, outputs:{ metal:+6, power:-5 }, maxLevel:2,
+    upgradeCost:[ null, { metal:15, credits:250 } ],
+    upgradeName:[ null, "Deep Core Drill" ],
+    desc:"+Metal, uses power. Rover boosts yield."
+  },
+  Refinery: { key:"Refinery", name:"Refinery", glyph:"", tag:"IND",
+    cost:{ metal:15, credits:0 }, outputs:{ credits:+4, power:-10, morale:-0.1 }, maxLevel:2,
+    upgradeCost:[ null, { metal:20, credits:500 } ],
+    upgradeName:[ null, "Alloy Plant" ],
+    desc:"Turns industry into credits. Upgrade increases credits."
+  },
+  Habitat: { key:"Habitat", name:"Habitat", glyph:"", tag:"RES",
+    cost:{ metal:10, credits:0 }, outputs:{ pop:+1, air:-2, water:-1, food:-1, morale:+0.1 }, maxLevel:2,
+    upgradeCost:[ null, { metal:15, credits:250 } ],
+    upgradeName:[ null, "Residential Block" ],
+    desc:"Population growth but increases consumption."
+  },
+  Clinic: { key:"Clinic", name:"Clinic", glyph:"", tag:"CIV",
+    cost:{ metal:12, credits:0 }, outputs:{ morale:+0.8, power:-4, water:-1 }, maxLevel:1,
+    upgradeCost:[ null ], upgradeName:[ null ],
+    desc:"Blocks spore morale events on Verdant K-2."
+  },
+  Rec: { key:"Rec", name:"Recreation", glyph:"", tag:"CIV",
+    cost:{ metal:10, credits:0 }, outputs:{ morale:+1.2, power:-4 }, maxLevel:1,
+    upgradeCost:[ null ], upgradeName:[ null ],
+    desc:"Boosts morale."
+  },
+
+  Terminal: { key:"Terminal", name:"Research Terminal", glyph:"", tag:"CIV",
+    cost:{ metal:6, credits:0 }, outputs:{ power:-2 }, maxLevel:1,
+    upgradeCost:[ null ], upgradeName:[ null ],
+    desc:"Early-game research. Generates a small amount of RP each cycle."
+  },
+
+  Lab: { key:"Lab", name:"Research Lab", glyph:"", tag:"CIV",
+    cost:{ metal:14, credits:80 }, outputs:{ power:-6 }, maxLevel:2,
+    upgradeCost:[ null, { metal:18, credits:140 } ],
+    upgradeName:[ null, "Research Core" ],
+    desc:"Generates Research Points each cycle."
+  },
+  RoverGarage: { key:"RoverGarage", name:"Rover Garage", glyph:"", tag:"IND",
+    cost:{ metal:12, credits:120 }, outputs:{ power:-3 }, maxLevel:1,
+    upgradeCost:[ null ], upgradeName:[ null ],
+    desc:"Allows purchasing a Rover (vehicle)."
+  },
+  /* District tiles */
+  DistrictResidential: { key:"DistrictResidential", name:"Residential District", glyph:"️", tag:"DIST",
+    cost:{ metal:10, credits:60 }, outputs:{}, maxLevel:1,
+    upgradeCost:[ null ], upgradeName:[ null ],
+    desc:"Adjacency: boosts Habitats (morale/pop efficiency)."
+  },
+  DistrictIndustrial: { key:"DistrictIndustrial", name:"Industrial District", glyph:"️", tag:"DIST",
+    cost:{ metal:12, credits:60 }, outputs:{}, maxLevel:1,
+    upgradeCost:[ null ], upgradeName:[ null ],
+    desc:"Adjacency: boosts Mines/Refineries output."
+  },
+  DistrictCivic: { key:"DistrictCivic", name:"Civic District", glyph:"️", tag:"DIST",
+    cost:{ metal:10, credits:60 }, outputs:{}, maxLevel:1,
+    upgradeCost:[ null ], upgradeName:[ null ],
+    desc:"Adjacency: boosts Life Support and morale buildings."
+  },
+  Launch: { key:"Launch", name:"Launch Complex", glyph:"", tag:"CORE",
+    cost:{ metal:30, credits:1000 }, outputs:{}, maxLevel:1,
+    upgradeCost:[ null ], upgradeName:[ null ],
+    desc:"Required to launch after City-Ready."
+  },
+};
+
+// ---------- Build Menu (locked by research) ----------
+const BUILD_MENU = [
+  { cat:"Core", items:["LandingPad","Solar","Battery","Launch"] },
+  { cat:"Life Support", items:["Scrubber","Condenser","Hydro","Clinic","Rec"] },
+  { cat:"Industry", items:["Mine","Refinery","RoverGarage"] },
+  { cat:"Research", items:["Lab"] },
+  { cat:"Districts", items:["DistrictResidential","DistrictIndustrial","DistrictCivic"] },
+];
+
+// ---------- Imports ----------
+const IMPORTS = [
+  { key:"air", label:"Air Canisters", emoji:"️", amount: 15, cost: 12 },
+  { key:"water", label:"Water Crates", emoji:"", amount: 15, cost: 10 },
+  { key:"food", label:"Food Packs", emoji:"", amount: 15, cost: 10 },
+  { key:"metal", label:"Metal Shipment", emoji:"", amount: 15, cost: 14 },
+];
+
+// ---------- Research Tree (Kade blueprints) ----------
+/**
+ * Each node unlocks a building or capability.
+ * prereq: list of node keys required.
+ */
+const RESEARCH = [
+  { key:"R_Refinery", title:"Industrial Exchange", cost:30, prereq:[], unlock:{ buildings:["Refinery"] },
+    text:"Unlocks Refinery (credits from industry). Kade: “Profit is a tool. Use it.”" },
+
+  { key:"R_Lab", title:"Kade’s Instruments", cost:40, prereq:["R_Refinery"], unlock:{ buildings:["Lab"], upgrades:["Lab"] },
+    text:"Unlocks Research Lab. Generates Research Points (RP)." },
+
+  { key:"R_Districts", title:"District Zoning", cost:55, prereq:["R_Lab"], unlock:{ buildings:["DistrictResidential","DistrictIndustrial","DistrictCivic"] },
+    text:"Unlocks District tiles. Adjacency bonuses apply." },
+
+  { key:"R_RoverGarage", title:"Rover Program", cost:60, prereq:["R_Lab"], unlock:{ buildings:["RoverGarage"] },
+    text:"Unlocks Rover Garage + Rover vehicle purchase." },
+
+  { key:"R_Upgrades", title:"Modular Upgrades", cost:70, prereq:["R_Districts"], unlock:{ upgrades:["Solar","Scrubber","Condenser","Hydro","Mine","Habitat","Battery","Refinery"] },
+    text:"Enables level-2 upgrades broadly (Shift+Click). Kade: “Iteration is civilization.”" },
+
+  { key:"R_SettlerCharter", title:"Settler Charter", cost:80, prereq:["R_Districts"], unlock:{ rep:+1 },
+    text:"Reputation boost. Unlocks better contracts and rewards." },
+];
+
+const researched = new Set(); // research nodes completed
+
+// ---------- Grid ----------
+const W=12, H=12;
+let grid = Array.from({length: W*H}, () => null);
+
+// ---------- Terrain (Map) ----------
+let terrain = Array.from({length: W*H}, () => ({ t:"dust", buildable:true }));
+
+function seedFromPlanet(){
+  const name = (getPlanet().name || "planet");
+  let h = 2166136261;
+  for(let i=0;i<name.length;i++){ h ^= name.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return (h>>>0);
+}
+function planetTerrainProfile(){
+  const p = (getPlanet().name || "").toLowerCase();
+  if(p.includes("red") || p.includes("dune")) return { base:"dust", water:0.04, rock:0.28, jungle:0.00, dust:0.54, void:0.02 };
+  if(p.includes("cryo") || p.includes("eos") || p.includes("ice")) return { base:"ice", water:0.12, rock:0.26, jungle:0.00, dust:0.30, void:0.02 };
+  if(p.includes("verdant") || p.includes("jungle") || p.includes("k-2")) return { base:"jungle", water:0.10, rock:0.18, jungle:0.52, dust:0.12, void:0.02 };
+  return { base:"dust", water:0.06, rock:0.22, jungle:0.04, dust:0.44, void:0.02 };
+}
+function genTerrain(){
+  const seed = seedFromPlanet();
+  const prof = planetTerrainProfile();
+  let ss = seed;
+  const rnd = ()=>{ ss = (ss * 1664525 + 1013904223) >>> 0; return ss / 4294967296; };
+
+  const pick = ()=>{
+    const r = rnd();
+    const buckets = [
+      ["water", prof.water],
+      ["rock", prof.rock],
+      ["jungle", prof.jungle],
+      ["dust", prof.dust],
+      ["void", prof.void],
+      [prof.base, 1.0]
+    ];
+    let acc=0;
+    for(const [k,w] of buckets){ acc += w; if(r < acc) return k; }
+    return prof.base;
+  };
+
+  terrain = Array.from({length: W*H}, () => {
+    const t = pick();
+    const buildable = (t !== "water" && t !== "void");
+    return { t, buildable };
+  });
+
+  // carve buildable 3x3 landing zone at center
+  const mid = Math.floor((W*H)/2);
+  const mx = mid % W, my = Math.floor(mid / W);
+  for(let dy=-1;dy<=1;dy++){
+    for(let dx=-1;dx<=1;dx++){
+      const x=mx+dx,y=my+dy;
+      if(x>=0 && x<W && y>=0 && y<H){
+        const idx = y*W + x;
+        terrain[idx] = { t: prof.base, buildable:true };
+      }
+    }
+  }
+}
+let selectedBuildingKey = "Solar";
+
+// ---------- UI: Meters ----------
+const METERS = [
+  { key:"air", label:"️ AIR", min:-60, max:140 },
+  { key:"water", label:" WATER", min:-60, max:140 },
+  { key:"food", label:" FOOD", min:-60, max:140 },
+  { key:"power", label:" POWER", min:-120, max:140 },
+  { key:"morale", label:" MORALE", min:0, max:100 },
+];
+
+// ---------- Adjacency ----------
+function idxToXY(i){ return {x:i%W, y:Math.floor(i/W)}; }
+function xyToIdx(x,y){ return y*W+x; }
+function neighbors(i){
+  const {x,y}=idxToXY(i);
+  const list=[];
+  if(x>0) list.push(xyToIdx(x-1,y));
+  if(x<W-1) list.push(xyToIdx(x+1,y));
+  if(y>0) list.push(xyToIdx(x,y-1));
+  if(y<H-1) list.push(xyToIdx(x,y+1));
+  return list;
+}
+function hasAdjacentDistrict(i, districtKey){
+  return neighbors(i).some(n=> grid[n]?.key === districtKey);
+}
+function anyAdjacentDistrict(i){
+  return neighbors(i).some(n=> grid[n]?.key?.startsWith("District"));
+}
+
+// ---------- Role mods ----------
+function role(){ return ROLES[state.roleKey]; }
+function mod(name, fallback=1){
+  return (role().mods && role().mods[name] != null) ? role().mods[name] : fallback;
+}
+
+// ---------- Costs / pay ----------
+function canAfford(cost){
+  const m = cost.metal||0, c = cost.credits||0;
+  return state.metal >= m && state.credits >= c;
+}
+function pay(cost){
+  state.metal -= (cost.metal||0);
+  state.credits -= (cost.credits||0);
+}
+function refundPartial(b){
+  const base = BUILDINGS[b.key].cost.metal||0;
+  state.metal += Math.floor(base*0.5);
+}
+
+// ---------- Toast ----------
+function setToast(msg, tone="neutral"){
+  const t = el("toast");
+  t.innerHTML = msg;
+  t.style.borderColor = tone==="bad" ? "rgba(255,107,107,.35)" : tone==="good" ? "rgba(123,211,137,.35)" : "rgba(255,255,255,.10)";
+  const plain = msg.replace(/<[^>]*>/g,"").replace(/\s+/g," ").trim();
+  if(plain) logEvent(plain, tone);
+}
+
+// ---------- Unlock helpers ----------
+function unlockBuilding(k){ state.unlocked.add(k); }
+function unlockUpgrade(k){ state.unlockedUpgrades.add(k); }
+
+// ---------- Build Menu UI ----------
+function buildMenuHTML(){
+  const wrap = document.createElement("div");
+
+  BUILD_MENU.forEach(section=>{
+    const h = document.createElement("div");
+    h.className="badge";
+    h.style.margin="8px 0 8px";
+    h.textContent = section.cat.toUpperCase();
+    wrap.appendChild(h);
+
+    section.items.forEach(k=>{
+      const b = BUILDINGS[k];
+      const isUnlocked = state.unlocked.has(k) || k==="LandingPad"; // landing always
+      const btn = document.createElement("button");
+      btn.className = "btn " + (selectedBuildingKey===k ? "primary": "");
+      btn.style.width="100%";
+      btn.style.marginBottom="8px";
+
+      const cost = b.cost;
+      btn.innerHTML = `${b.glyph} <strong>${b.name}</strong><br><small>Cost: ${cost.metal||0} ${cost.credits||0} • <span class="mono">${b.tag}</span></small>`;
+      btn.disabled = !isUnlocked || (k==="Launch" && state.rep < 1);
+
+      btn.onclick = ()=>{
+        selectedBuildingKey = k;
+        state.demolishMode = false;
+        el("demolishBtn").textContent = "Off";
+        el("demolishBtn").classList.remove("danger");
+        render();
+      };
+
+      if(!isUnlocked){
+        btn.innerHTML += `<br><small style="color:rgba(242,166,74,.9)"> Research required</small>`;
+      }
+
+      wrap.appendChild(btn);
+    });
+  });
+
+  return wrap;
+}
+
+// ---------- Tile rendering ----------
+function tileNode(i){
+  const div = document.createElement("div");
+  const terr = terrain[i] || {t:"dust", buildable:true};
+  div.className = `tile empty terrain-${terr.t}` + (terr.buildable ? "" : " blocked");
+  const cell = grid[i];
+
+  if(cell){
+    div.classList.remove("empty");
+    const def = BUILDINGS[cell.key];
+
+    const g = document.createElement("div");
+    g.className="glyph";
+    g.textContent = def.glyph;
+    div.appendChild(g);
+
+    const nm = document.createElement("div");
+    nm.className="name";
+    nm.textContent = def.name;
+    div.appendChild(nm);
+
+    const lvl = document.createElement("div");
+    lvl.className="lvl mono";
+    lvl.textContent = "Lv " + cell.level;
+    div.appendChild(lvl);
+
+    const tag = document.createElement("div");
+    tag.className="tag mono";
+    tag.textContent = def.tag;
+    div.appendChild(tag);
+
+    // subtle highlight if adjacency active
+    if(def.tag !== "DIST" && anyAdjacentDistrict(i)){
+      div.style.outline = "2px solid rgba(123,211,137,.22)";
+    }
+  }
+
+  if(!cell){
+    const tl = document.createElement("div");
+    tl.className = "terrainLabel mono";
+    tl.textContent = terr.buildable ? "" : "BLOCKED";
+    div.appendChild(tl);
+  }
+
+  div.onmousemove = ()=>{ state.cursorIdx = i; renderMinimap(); };
+
+  div.onclick = (e)=>{
+    const shift = e.shiftKey;
+
+    if(state.demolishMode){
+      if(grid[i]){
+        refundPartial(grid[i]);
+        grid[i]=null;
+        setToast(`<strong>Demolished.</strong> Refunded some metal.`, "neutral");
+        render();
+      } else setToast(`Nothing to demolish here.`, "neutral");
+      return;
+    }
+
+    if(shift){
+      // upgrade
+      if(!grid[i]) { setToast(`No building to upgrade here.`, "neutral"); return; }
+      const cell = grid[i];
+      const def = BUILDINGS[cell.key];
+
+      // must have upgrade permission unlocked
+      if(!state.unlockedUpgrades.has(def.key)){
+        setToast(`<strong>Upgrade locked.</strong> Research “Modular Upgrades”.`, "bad"); return;
+      }
+      if(cell.level >= def.maxLevel){ setToast(`<strong>${def.name}</strong> already max.`, "neutral"); return; }
+      const next = cell.level;
+      const uCostBase = def.upgradeCost[next];
+      if(!uCostBase){ setToast(`No upgrade available.`, "neutral"); return; }
+
+      // role: cheaper upgrades
+      const uCost = {
+        metal: Math.ceil((uCostBase.metal||0) * mod("upgradeCostMult",1)),
+        credits: Math.ceil((uCostBase.credits||0) * mod("upgradeCostMult",1)),
+      };
+      if(!canAfford(uCost)){
+        setToast(`<strong>Cannot upgrade.</strong> Need ${uCost.metal||0} ${uCost.credits||0}.`, "bad");
+        return;
+      }
+      pay(uCost);
+      cell.level++;
+      setToast(`<strong>Upgraded!</strong> ${def.upgradeName[next] || def.name} (Lv ${cell.level}).`, "good");
+      render();
+      return;
+    }
+
+    // place
+    if(!terr.buildable){
+      setToast(`<strong>Terrain blocked.</strong> Build on land tiles.`, "bad");
+      return;
+    }
+    if(grid[i]){
+      setToast(`<strong>Tile occupied.</strong> Shift+Click to upgrade or enable Demolish.`, "neutral");
+      return;
+    }
+
+    const def = BUILDINGS[selectedBuildingKey];
+    const planet = getPlanet();
+
+    if(planet.buildLimit && grid.filter(Boolean).length >= planet.buildLimit){
+      setToast(`<strong>Build limit reached</strong> on this planet.`, "bad"); return;
+    }
+
+    if(selectedBuildingKey==="LandingPad" && grid.some(x=>x?.key==="LandingPad")){
+      setToast(`Only one <strong>Landing Pad</strong> allowed.`, "bad"); return;
+    }
+
+    if(!state.unlocked.has(def.key) && def.key!=="LandingPad"){
+      setToast(`<strong>Blueprint locked.</strong> Research required.`, "bad"); return;
+    }
+
+    if(!canAfford(def.cost)){
+      setToast(`<strong>Insufficient resources.</strong> Need ${def.cost.metal||0} ${def.cost.credits||0}.`, "bad");
+      return;
+    }
+
+    pay(def.cost);
+    grid[i] = { key: def.key, level: 1 };
+    setToast(`<strong>Built:</strong> ${def.name}.`, "good");
+    render();
+  };
+
+  return div;
+}
+
+// ---------- Output calculation ----------
+function getPowerBuffer(){
+  const batteryCount = grid.filter(x=>x?.key==="Battery").reduce((a,c)=>a + (c.level===2 ? 2 : 1), 0);
+  return batteryCount * 50;
+}
+
+// District adjacency multipliers
+function adjacencyMult(i, buildingKey){
+  const def = BUILDINGS[buildingKey];
+  let mult = 1.0;
+
+  // generic “in a district” bump (small)
+  if(anyAdjacentDistrict(i)) mult *= 1.10;
+
+  // specialized districts
+  if(def.tag==="RES" && hasAdjacentDistrict(i,"DistrictResidential")) mult *= 1.20;
+  if(def.tag==="IND" && hasAdjacentDistrict(i,"DistrictIndustrial")) mult *= 1.20;
+  if(def.tag==="LIFE" && hasAdjacentDistrict(i,"DistrictCivic")) mult *= 1.18;
+  if(def.tag==="CIV" && hasAdjacentDistrict(i,"DistrictCivic")) mult *= 1.15;
+
+  return mult;
+}
+
+function buildingOutputPerCycle(i, cell){
+  const def = BUILDINGS[cell.key];
+  const levelMult = cell.level===2 ? 1.6 : 1.0;
+  const adjMult = (def.tag==="DIST" || def.key==="LandingPad" || def.key==="Launch") ? 1.0 : adjacencyMult(i, def.key);
+  // District adjacency commerce bonus (Credits via city planning)
+  let commerce = 0;
+  if(def.tag !== "DIST" && def.key !== "Launch" && def.key !== "LandingPad"){
+    if(anyAdjacentDistrict(i)) commerce += 0.20;
+    if(def.tag==="RES" && hasAdjacentDistrict(i,"DistrictResidential")) commerce += 0.35;
+    if(def.tag==="IND" && hasAdjacentDistrict(i,"DistrictIndustrial")) commerce += 0.40;
+    if((def.tag==="LIFE"||def.tag==="CIV") && hasAdjacentDistrict(i,"DistrictCivic")) commerce += 0.30;
+    if(def.key==="Lab" && hasAdjacentDistrict(i,"DistrictCivic")) commerce += 0.45;
+    commerce *= levelMult;
+  }
+
+  // clone outputs
+  const out = { air:0, water:0, food:0, power:0, metal:0, credits:0, morale:0, pop:0, rp:0 };
+
+  for(const [k,v] of Object.entries(def.outputs||{})){
+    out[k] = (out[k]||0) + v * levelMult * adjMult;
+  }
+
+  // Role: power consumption reduction (Engineer)
+  // apply ONLY to negative power from buildings
+  if(out.power < 0){
+    out.power = out.power * mod("powerUseMult",1);
+  }
+
+  // Special upgrades
+  const p = getPlanet();
+
+  if(def.key==="Condenser" && p.condenserBonusMult){
+    out.water *= p.condenserBonusMult;
+  }
+
+  // Scrubber upgrade
+  if(def.key==="Scrubber" && cell.level===2){
+    out.morale += 0.3;
+    out.power += 1; // less negative
+  }
+
+  // Hydro upgrade
+  if(def.key==="Hydro" && cell.level===2){
+    out.food += 6;
+    out.morale += 0.4;
+  }
+
+  // Mine upgrade
+  if(def.key==="Mine" && cell.level===2){
+    out.metal += 6;
+  }
+
+  // Refinery upgrade
+  if(def.key==="Refinery" && cell.level===2){
+    out.credits += 4;
+  }
+
+  // Habitat upgrade
+  if(def.key==="Habitat" && cell.level===2){
+    out.pop += 1;
+  }
+
+  // Research Lab generates RP
+  if(def.key==="Lab"){
+    // base RP
+    let rpGain = (cell.level===2 ? 2.5 : 1.6);
+    // districts help a bit
+    rpGain *= adjMult;
+    // role engineer gains a bit more research
+    rpGain *= mod("researchGainMult", 1);
+    out.rp += rpGain;
+  }
+
+  // Early research sources (so progression can't stall)
+  if(def.key==="Terminal"){
+    out.rp += 0.35; // small, reliable RP (no credits cost)
+  }
+  if(def.key==="LandingPad" && cell.level>=2){
+    // Trade Pad upgrades include comms + documentation (tiny RP trickle)
+    out.rp += 0.10;
+  }
+
+
+  // Prospector: mining stronger + Rover strengthens mining further
+  if(def.key==="Mine"){
+    out.metal *= mod("miningMult",1);
+    if(state.roverOwned) out.metal *= 1.50;
+  }
+
+  if(commerce>0) out.credits += commerce * mod("contractRewardMult",1);
+  return out;
+}
+
+// ---------- Stability ----------
+function isStable(){
+  const powerOk = state.power >= -getPowerBuffer();
+  return state.air >= 0 && state.water >= 0 && state.food >= 0 && powerOk && state.morale >= 45;
+}
+
+// ---------- Contracts + Dilemmas ----------
+/**
+ * Contracts can include an optional dilemma that triggers when progress hits a condition.
+ * Branching rewards can adjust rep/credits/morale/resources.
+ */
+const CONTRACT_TEMPLATES = [
+  {
+    type:"Stability",
+    title:"Stability Proof",
+    desc:(t)=>`Maintain colony stability until streak reaches ${t}.`,
+    start:(s)=>{ s.contract = { type:"Stability", target: s.contractTarget, progress: s.stableStreak, dilemmaFired:false }; },
+    progress:(s)=> s.stableStreak,
+    complete:(s)=> s.stableStreak >= s.contract.target,
+    reward:(s)=>{
+      const bonus = Math.floor((80 + 40*s.rep) * mod("contractRewardMult",1));
+      s.credits += bonus;
+      s.rep = clamp(s.rep+1,0,4);
+      s.contractTarget = Math.min(30, s.contractTarget + 5);
+    },
+    dilemma:(s)=>({
+      title:"Emergency Relay",
+      body:"Vox reports another crew is oxygen-starved. Do you divert your next air shipment?",
+      a:{ label:"Divert Air (ethical)", effects:(st)=>{ st.air -= 6; st.morale += 6; st.rep = clamp(st.rep+1,0,4); } },
+      b:{ label:"Keep Supplies (pragmatic)", effects:(st)=>{ st.credits += 25; st.morale -= 4; } }
+    }),
+    dilemmaCondition:(s)=> s.stableStreak >= Math.max(6, Math.floor(s.contract.target*0.6))
+  },
+  {
+    type:"Delivery",
+    title:"Alloy Rush",
+    desc:()=>`Deliver 40 metal reserves while keeping morale ≥ 55.`,
+    start:(s)=>{ s.contract = { type:"Delivery", needMetal:40, needMorale:55, dilemmaFired:false }; },
+    progress:(s)=> Math.min(40, Math.floor(s.metal)),
+    complete:(s)=> s.metal >= 40 && s.morale >= 55,
+    reward:(s)=>{
+      const bonus = Math.floor(140 * mod("contractRewardMult",1));
+      s.credits += bonus;
+      s.rep = clamp(s.rep+1,0,4);
+      // consume some reserves to simulate delivery
+      s.metal -= 25;
+    },
+    dilemma:(s)=>({
+      title:"Kade’s Shortcut",
+      body:"Kade offers a risky refinery tweak: +credits output, but increased quake damage this planet.",
+      a:{ label:"Accept tweak", effects:(st)=>{ st.credits += 40; st._quakeBoost = true; } },
+      b:{ label:"Decline", effects:(st)=>{ st.morale += 2; } }
+    }),
+    dilemmaCondition:(s)=> s.metal >= 30
+  },
+  {
+    type:"Resettlement",
+    title:"Resettlement Wave",
+    desc:()=>`Grow to population ≥ 20 without any resource going below -5.`,
+    start:(s)=>{ s.contract = { type:"Resettlement", targetPop:20, safeFloor:-5, dilemmaFired:false }; },
+    progress:(s)=> s.pop,
+    complete:(s)=> s.pop >= s.contract.targetPop && s.air > -5 && s.water > -5 && s.food > -5,
+    reward:(s)=>{
+      const bonus = Math.floor(160 * mod("contractRewardMult",1));
+      s.credits += bonus;
+      s.rep = clamp(s.rep+1,0,4);
+      s.morale += 6;
+    },
+    dilemma:(s)=>({
+      title:"Envoy Luma’s Clause",
+      body:"Luma asks you to add recreation before accepting more settlers. It slows growth but improves morale.",
+      a:{ label:"Agree (slow & safe)", effects:(st)=>{ st.morale += 8; st._growthBrake = true; } },
+      b:{ label:"Ignore (fast)", effects:(st)=>{ st.credits += 20; st.morale -= 6; } }
+    }),
+    dilemmaCondition:(s)=> s.pop >= 12
+  }
+];
+
+function newContract(){
+  const t = CONTRACT_TEMPLATES[rand(0, CONTRACT_TEMPLATES.length-1)];
+  state.contractActive = true;
+  state.contractTemplate = t;
+  state.contractTarget = state.contractTarget ?? 10;
+  t.start(state);
+  el("transmissionText").textContent = `Contract: ${t.title} — ${t.desc(state.contractTarget)}`;
+  setToast(` <strong>New Contract:</strong> ${t.title}`, "good");
+}
+
+function maybeFireDilemma(){
+  if(!state.contractActive || !state.contractTemplate) return;
+  const t = state.contractTemplate;
+  if(!t.dilemma || !t.dilemmaCondition) return;
+  if(state.contract.dilemmaFired) return;
+  if(t.dilemmaCondition(state)){
+    state.contract.dilemmaFired = true;
+    showDilemma(t.dilemma(state));
+  }
+}
+
+function showDilemma(d){
+  el("modalTitle").textContent = d.title;
+  el("modalBody").textContent = d.body;
+  const c = el("modalChoices");
+  c.innerHTML = "";
+
+  const btnA = document.createElement("button");
+  btnA.className = "btn good";
+  btnA.textContent = d.a.label;
+  btnA.onclick = ()=>{
+    d.a.effects(state);
+    hideDilemma();
+    setToast(`⭐ Decision made: <strong>${d.a.label}</strong>.`, "good");
+    render();
+  };
+
+  const btnB = document.createElement("button");
+  btnB.className = "btn danger";
+  btnB.textContent = d.b.label;
+  btnB.onclick = ()=>{
+    d.b.effects(state);
+    hideDilemma();
+    setToast(`⭐ Decision made: <strong>${d.b.label}</strong>.`, "neutral");
+    render();
+  };
+
+  c.appendChild(btnA);
+  c.appendChild(btnB);
+  el("modalBack").style.display="flex";
+}
+function hideDilemma(){ el("modalBack").style.display="none"; }
+
+// ---------- Rover ----------
+function canBuyRover(){
+  const hasGarage = grid.some(x=>x?.key==="RoverGarage");
+  return hasGarage && !state.roverOwned && state.credits>=250 && state.metal>=20;
+}
+function buyRover(){
+  state.credits -= 250;
+  state.metal -= 20;
+  state.roverOwned = true;
+  setToast(` <strong>Rover acquired.</strong> Mining yield increased + Survey unlocked.`, "good");
+}
+
+// ---------- Settlers (Quartermaster perk) ----------
+function popCap(){
+  const hab = grid.filter(x=>x?.key==="Habitat").length;
+  const distRes = grid.filter(x=>x?.key==="DistrictResidential").length;
+  const hq = grid.filter(x=>x?.key==="HQ").length;
+  // Base crew + habitats + residential districts + HQ support
+  return 2 + hab*4 + distRes*3 + hq*2;
+}
+function basicsOk(){
+  // Allow recovery: non-negative essentials is acceptable for purchase
+  return (state.air >= 0 && state.water >= 0 && state.food >= 0 && state.power > -powerBuffer*0.35);
+}
+function isQuartermaster(){ return state.roleKey === "Quartermaster"; }
+
+function settlerCost(){
+  const planetMult = getPlanet().importCostMult || 1;
+  const roleMult = mod("importCostMult", 1);
+  const base = 30; // base credits per settler
+  return Math.ceil(base * planetMult * roleMult);
+}
+function canBuySettlers(){
+  if(!isQuartermaster()) return { ok:false, reason:"Quartermaster perk required." };
+  if(!basicsOk()) return { ok:false, reason:"Stability required (air/water/food/power)." };
+  if(state.pop >= popCap()) return { ok:false, reason:"No housing capacity (build Habitats / Residential Districts)." };
+  const cost = settlerCost();
+  if(state.credits < cost) return { ok:false, reason:`Need ${cost} credits.` };
+  return { ok:true };
+}
+function buySettlers(){
+  const chk = canBuySettlers();
+  if(!chk.ok){ setToast(`<strong>Cannot buy settlers.</strong> ${chk.reason}`, "bad"); return; }
+  const cost = settlerCost();
+  const wasZero = (state.pop<=0);
+  state.credits -= cost;
+  state.pop += 1;
+  // starter supplies if recovering from zero-pop soft lock
+  if(wasZero){
+    state.food += 2;
+    state.water += 2;
+    state.air += 2;
+    state.morale = Math.max(state.morale, 40);
+  }
+  setToast(`👥 <strong>Settler purchased.</strong> +1 POP (−${cost} credits).`, "good");
+}
+
+function roverSurvey(){
+  // Survey yields random resources scaled by prospector bonus
+  const mult = mod("surveyMult",1);
+  const metalGain = Math.floor(rand(3,8) * mult);
+  const creditGain = Math.floor(rand(4,10) * mult);
+  const rpGain = Math.floor(rand(1,3) * mult);
+
+  state.metal += metalGain;
+  state.credits += creditGain;
+  state.rp += rpGain;
+
+  // morale tiny bump for “good news”
+  state.morale = clamp(state.morale + 1, 0, 100);
+
+  setToast(`️ Survey report: +${metalGain} +${creditGain} +RP${rpGain}.`, "good");
+}
+
+// ---------- Research ----------
+function canResearch(node){
+  if(researched.has(node.key)) return false;
+  // prereqs
+  if(node.prereq && node.prereq.some(k=>!researched.has(k))) return false;
+  return state.rp >= node.cost;
+}
+function doResearch(node){
+  if(!canResearch(node)) return;
+  state.rp -= node.cost;
+  researched.add(node.key);
+
+  // apply unlocks
+  if(node.unlock?.buildings) node.unlock.buildings.forEach(unlockBuilding);
+  if(node.unlock?.upgrades) node.unlock.upgrades.forEach(unlockUpgrade);
+  if(node.unlock?.rep) state.rep = clamp(state.rep + node.unlock.rep, 0, 4);
+
+  el("transmissionText").textContent = `Kade: “${node.title} is yours. Don’t waste it.”`;
+  setToast(` <strong>Researched:</strong> ${node.title}`, "good");
+  render();
+}
+
+// ---------- Imports UI ----------
+function importsUI(){
+  const wrap = document.createElement("div");
+
+  // planet multiplier + role multiplier
+  const planetMult = getPlanet().importCostMult || 1;
+  const roleMult = mod("importCostMult", 1);
+
+  IMPORTS.forEach(item=>{
+    const cost = Math.ceil(item.cost * planetMult * roleMult);
+    const row = document.createElement("div");
+    row.className="row";
+    row.innerHTML = `
+      <div>
+        <strong>${item.emoji} ${item.label}</strong><br/>
+        <small>+${item.amount} ${item.key.toUpperCase()} • Cost ${cost}</small>
+      </div>
+    `;
+    const btn = document.createElement("button");
+    btn.className="btn primary";
+    btn.textContent="Buy";
+    btn.disabled = state.credits < cost;
+    btn.onclick = ()=>{
+      if(state.credits < cost){ setToast(`<strong>Not enough credits.</strong>`, "bad"); return; }
+      state.credits -= cost;
+      state[item.key] += item.amount;
+      setToast(` Imported <strong>${item.label}</strong> (+${item.amount} ${item.key}).`, "good");
+      render();
+    };
+    row.appendChild(btn);
+    wrap.appendChild(row);
+  });
+
+  // Rover purchase (vehicle)
+  const r = document.createElement("div");
+  r.className="row";
+  const roverUnlocked = state.unlocked.has("RoverGarage");
+  const txt = state.roverOwned ? "Owned" : roverUnlocked ? "Available" : "Locked";
+  r.innerHTML = `
+    <div>
+      <strong> Rover</strong><br/>
+      <small>Cost 20 250 • Requires Rover Garage • Status: <span class="mono">${txt}</span></small>
+    </div>
+  `;
+  const b = document.createElement("button");
+  b.className = "btn good";
+  b.textContent = state.roverOwned ? "Owned" : "Buy";
+  b.disabled = state.roverOwned || !canBuyRover();
+  b.onclick = ()=>{ buyRover(); render(); };
+  r.appendChild(b);
+  wrap.appendChild(r);
+
+
+  // Buy Settlers (Quartermaster perk)
+  const srow = document.createElement("div");
+  srow.className = "row";
+  const c = settlerCost();
+  const cap = popCap();
+  const lockTxt = isQuartermaster() ? "" : " • Quartermaster perk required";
+  srow.innerHTML = `
+    <div>
+      <strong>👥 Buy Settlers</strong><br/>
+      <small>+1 POP • Cost ${c} credits • Capacity ${state.pop}/${cap}${lockTxt}</small>
+    </div>
+  `;
+  const sbtn = document.createElement("button");
+  sbtn.className = "btn primary";
+  sbtn.id = "buySettlersBtn";
+  sbtn.textContent = "Buy";
+  const chk = canBuySettlers();
+  sbtn.disabled = !chk.ok;
+  sbtn.title = chk.ok ? "Purchase +1 settler" : chk.reason;
+  sbtn.onclick = ()=>{ buySettlers(); render(); };
+  srow.appendChild(sbtn);
+  wrap.appendChild(srow);
+
+  return wrap;
+}
+
+// ---------- Meters ----------
+function renderMeters(){
+  const wrap = el("topbars");
+  wrap.innerHTML = "";
+  METERS.forEach(m=>{
+    const v = state[m.key];
+    const pct = clamp(((v - m.min)/(m.max - m.min))*100, 0, 100);
+    const div = document.createElement("div");
+    div.className="meter";
+    const status = (m.key==="morale")
+      ? (v>=55 ? "good" : v<=35 ? "bad" : "")
+      : (v>=0 ? "good" : v<=-10 ? "bad" : "");
+    div.innerHTML = `
+      <div class="label mono"><span>${m.label}</span><span>${fmt(v)}</span></div>
+      <div class="bar ${status}"><i style="width:${pct}%"></i></div>
+    `;
+    wrap.appendChild(div);
+  });
+
+  // Credits/Metal display
+  const res = document.createElement("div");
+  res.className = "resBox";
+  res.innerHTML = `
+    <div class="resRow"><span class="mono">CREDITS</span><strong class="mono">${Math.floor(state.credits)}</strong></div>
+    <div class="resRow"><span class="mono">METAL</span><strong class="mono">${Math.floor(state.metal)}</strong></div>
+  `;
+  wrap.appendChild(res);
+
+
+  el("cycleBadge").textContent = `Cycle: ${state.cycle}`;
+  el("rpBadge").textContent = `RP: ${Math.floor(state.rp)}`;
+  el("repBadge").textContent = `Rep: ${REP_NAMES[state.rep]}`;
+  
+// Update currency HUD + floating ticks
+if(window.__prevCredits == null){ window.__prevCredits = Math.floor(state.credits); }
+if(window.__prevMetal == null){ window.__prevMetal = Math.floor(state.metal); }
+
+const cNow = Math.floor(state.credits);
+const mNow = Math.floor(state.metal);
+el("creditsTotal").textContent = cNow;
+el("metalTotal").textContent = mNow;
+
+function spawnTick(text, isGood){
+  const hud = document.getElementById("currencyHUD");
+  if(!hud) return;
+  const r = hud.getBoundingClientRect();
+  const d = document.createElement("div");
+  d.className = "tick " + (isGood ? "good" : "bad");
+  d.textContent = text;
+  const x = Math.round(r.left + 10 + (Math.random()*14));
+  const y = Math.round(r.top + 10 + (Math.random()*10));
+  d.style.left = x + "px";
+  d.style.top = y + "px";
+  document.body.appendChild(d);
+  setTimeout(()=>d.remove(), 950);
+}
+
+const dC = cNow - window.__prevCredits;
+const dM = mNow - window.__prevMetal;
+if(dC !== 0){
+  spawnTick((dC>0?"+":"") + dC + "¢", dC>0);
+  window.__prevCredits = cNow;
+}
+if(dM !== 0){
+  spawnTick((dM>0?"+":"") + dM + "⛓", dM>0);
+  window.__prevMetal = mNow;
+}
+el("planetBadge").textContent = `Planet: ${getPlanet().name}`;
+  el("goalBadge").textContent = `Goal: City-Ready streak ${state.stableStreak}/20`;
+
+  el("kpiPop").textContent = state.pop;
+  el("kpiStreak").textContent = state.stableStreak;
+  el("kpiStable").textContent = isStable() ? "Yes" : "No";
+
+  const dCount = grid.filter(x=>x?.key?.startsWith("District")).length;
+  el("kpiDistricts").textContent = dCount;
+}
+
+// ---------- Research UI ----------
+function researchUI(){
+  const wrap = document.createElement("div");
+  RESEARCH.forEach(node=>{
+    const div = document.createElement("div");
+    const prereqOk = !node.prereq?.some(k=>!researched.has(k));
+    const done = researched.has(node.key);
+    div.className = "node " + (done ? "unlocked" : "locked");
+
+    const reqText = node.prereq?.length ? `Prereq: ${node.prereq.map(k=>k.replace("R_","")).join(", ")}` : `Prereq: None`;
+    div.innerHTML = `
+      <div class="nodeTop">
+        <div>
+          <div class="title"><strong> ${node.title}</strong></div>
+          <div class="meta">${node.text}</div>
+          <div class="meta req">Cost: RP ${node.cost} • ${reqText}</div>
+        </div>
+        <div class="badge mono">${done ? "UNLOCKED" : prereqOk ? "READY" : "BLOCKED"}</div>
+      </div>
+    `;
+    const actions = document.createElement("div");
+    actions.className="nodeActions";
+    const btn = document.createElement("button");
+    btn.className = "btn primary";
+    btn.textContent = done ? "Completed" : "Research";
+    btn.disabled = done || !canResearch(node);
+    btn.onclick = ()=> doResearch(node);
+    actions.appendChild(btn);
+    div.appendChild(actions);
+
+    wrap.appendChild(div);
+  });
+  return wrap;
+}
+
+// ---------- Render all ----------
+function render(){
+  // Preserve right-panel scroll so UI doesn't "collapse" on rerender
+  const __rightPanel = document.querySelector("section.panel");
+  const __scrollTop = __rightPanel ? __rightPanel.scrollTop : 0;
+
+  // Role UI
+  el("roleBadge").textContent = `Role: ${role().name}`;
+  el("roleName").textContent = role().name;
+  el("roleDesc").textContent = role().desc;
+  el("roleBonusText").textContent = "Bonuses: " + role().bonuses.join(" • ");
+
+  // Build menu
+  const buildList = el("buildList");
+  buildList.innerHTML = "";
+  buildList.appendChild(buildMenuHTML());
+
+  // Research
+  const tree = el("researchTree");
+  tree.innerHTML = "";
+  tree.appendChild(researchUI());
+
+  // Imports
+  const imp = el("imports");
+  imp.innerHTML = "";
+  imp.appendChild(importsUI());
+
+  // Grid
+  const g = el("grid");
+  g.innerHTML = "";
+  for(let i=0;i<grid.length;i++){
+    g.appendChild(tileNode(i));
+  }
+
+  // Rover actions
+  el("roverText").textContent = state.roverOwned ? "Rover ready. Mining boosted. Survey available." : (state.unlocked.has("RoverGarage") ? "Buy a rover (requires Rover Garage)." : "No rover owned.");
+  el("surveyBtn").disabled = !state.roverOwned;
+  el("surveyBtn").textContent = state.roverOwned ? "Survey" : "Survey (Locked)";
+
+  // City-ready / Launch enable
+  const hasLaunch = grid.some(x=>x?.key==="Launch");
+  if(hasLaunch && state.pop >= 35 && state.stableStreak >= 20 && isStable()){
+    el("launchBtn").disabled = false;
+  } else el("launchBtn").disabled = true;
+
+  // Simulation label
+  el("simState").textContent = state.running ? "Running (1 cycle/sec)" : "Paused";
+
+  renderMeters();
+  renderMinimap();
+}
+
+// ---------- Simulation ----------
+function applyCycle(){
+  state.cycle++;
+
+  // Power buffer
+  const powerBuffer = getPowerBuffer();
+
+  // Sum outputs
+  let delta = { air:0, water:0, food:0, power:0, metal:0, credits:0, morale:0, pop:0, rp:0 };
+  grid.forEach((cell,i)=>{
+    if(!cell) return;
+    const o = buildingOutputPerCycle(i, cell);
+    for(const k of Object.keys(delta)){
+      if(o[k] != null) delta[k] += o[k];
+    }
+  });
+
+  // planet hazards
+  const p = getPlanet();
+
+  // solar penalty
+  if(p.solarPenaltyChance && Math.random() < p.solarPenaltyChance){
+    const solarCells = grid.filter(x=>x?.key==="Solar");
+    if(solarCells.length){
+      const solarBase = solarCells.reduce((acc,c)=>{
+        // estimate solar output at its current level without adjacency (solar doesn't use district anyway)
+        const levelMult = c.level===2 ? 1.6 : 1.0;
+        return acc + (10 * levelMult);
+      },0);
+      const penalty = solarBase * (1 - (p.solarPenaltyMult ?? 0.5));
+      delta.power -= penalty;
+      setToast(`⚠️ <strong>Solar Storm.</strong> Solar output reduced this cycle.`, "bad");
+    }
+  }
+
+  // spores
+  if(p.sporeChance && Math.random() < p.sporeChance){
+    const hasClinic = grid.some(x=>x?.key==="Clinic");
+    if(!hasClinic){
+      state.morale -= 6;
+      setToast(`☣️ <strong>Spore Event.</strong> Morale dropped (no Clinic).`, "bad");
+    } else setToast(` Clinic contained a spore event.`, "good");
+  }
+
+  // radiation
+  if(p.radChance && Math.random() < p.radChance){
+    state.morale -= 4;
+    setToast(`☢️ <strong>Radiation Spike.</strong> Morale dropped.`, "bad");
+  }
+
+  // quake
+  let quakeChance = p.quakeChance || 0;
+  if(state._quakeBoost) quakeChance += 0.08; // from a dilemma choice
+  if(quakeChance && Math.random() < quakeChance){
+    const idxs = grid.map((c,i)=>c?i:-1).filter(i=>i>=0);
+    if(idxs.length){
+      const hit = idxs[Math.floor(Math.random()*idxs.length)];
+      const cell = grid[hit];
+      if(cell.level>1){
+        cell.level = 1;
+        setToast(` <strong>Quake!</strong> A building was damaged (downgraded).`, "bad");
+      } else {
+        if(Math.random()<0.25){
+          grid[hit]=null;
+          setToast(` <strong>Quake!</strong> A building collapsed.`, "bad");
+        }
+      }
+    }
+  }
+
+  // Apply deltas
+  state.air += delta.air;
+  state.water += delta.water;
+  state.food += delta.food;
+  state.power += delta.power;
+  state.metal += delta.metal;
+  state.credits += delta.credits;
+  state.morale += delta.morale;
+  state.rp += delta.rp;
+
+  // Growth brake from dilemma: slows pop growth
+  const growthBrake = state._growthBrake ? 0.5 : 1.0;
+
+  // Population growth (from habitats): only if basics ok
+  let popGain = Math.floor(delta.pop * growthBrake);
+  if(popGain>0){
+    const ok = (state.air>0 && state.water>0 && state.food>0 && state.power>-powerBuffer*0.2);
+    if(ok) state.pop += popGain;
+  }
+
+  // Baseline consumption per person
+  const cons = {
+    air: 0.6 * state.pop,
+    water: 0.35 * state.pop,
+    food: 0.35 * state.pop,
+    power: 0.15 * state.pop,
+  };
+  state.air -= cons.air;
+  state.water -= cons.water;
+  state.food -= cons.food;
+  state.power -= cons.power;
+
+  // Clamp morale
+  state.morale = clamp(state.morale, 0, 100);
+
+  // Power buffering
+  state.power = Math.max(state.power, -powerBuffer);
+
+  // Crisis cascade
+  const coreBad = (state.air < -10) || (state.food < -10) || (state.water < -10);
+  if(coreBad){
+    state.morale -= 8;
+    if(state.pop>0 && Math.random()<0.18) state.pop -= 1;
+    setToast(` <strong>Life Support Crisis.</strong> Morale down; settlers leaving.`, "bad");
+  }
+
+
+  // Recovery mechanics: prevent soft-lock when population hits 0
+  const hasHab = grid.some(x=>x?.key==="Habitat");
+  const hasLanding = grid.some(x=>x?.key==="LandingPad");
+  const basicsOk = (state.air > 0 && state.water > 0 && state.food > 0 && state.power > -powerBuffer*0.2);
+
+  // Emergency shuttle: if you have Habitats and basics are OK, repopulate to 1 (once per 3 cycles max)
+  if(state.pop<=0 && hasHab && basicsOk){
+    if(!state._repopCooldown || state._repopCooldown<=0){
+      state.pop = 1;
+      state._repopCooldown = 3;
+      setToast(`🚀 <strong>Emergency Shuttle.</strong> A settler arrives to restart the colony.`, "good");
+    }
+  }
+  if(state._repopCooldown) state._repopCooldown = Math.max(0, state._repopCooldown-1);
+
+  // Immigration: when stable and you have a Landing Pad, spend credits to attract settlers slowly
+  if(isStable() && hasLanding && basicsOk && state.pop > 0){
+    state._immTimer = (state._immTimer ?? 0) + 1;
+    if(state._immTimer >= 4 && state.credits >= 12){
+      state.credits -= 12;
+      state.pop += 1;
+      state._immTimer = 0;
+      setToast(`👥 <strong>Immigration.</strong> +1 settler arrived (−12 credits).`, "good");
+    }
+  }
+
+  // Tiny passive research from active population (can't be 0 forever)
+  if(state.pop > 0){
+    state.rp += 0.02 * state.pop * mod("researchGainMult", 1);
+  }
+
+
+  // Stability streak
+  if(isStable()) state.stableStreak++;
+  else state.stableStreak = Math.max(0, state.stableStreak-1);
+
+  // Contracts progress + dilemmas
+  if(state.contractActive && state.contractTemplate){
+    maybeFireDilemma();
+    const t = state.contractTemplate;
+    if(t.complete(state)){
+      // complete
+      t.reward(state);
+      state.contractActive = false;
+      state.contractTemplate = null;
+      state.contract = null;
+      el("transmissionText").textContent = `Vox: “Contract logged. Keep moving.” Rep is now ${REP_NAMES[state.rep]}.`;
+      setToast(`⭐ <strong>Contract complete!</strong> Rep: ${REP_NAMES[state.rep]}`, "good");
+    }
+  }
+
+  render();
+}
+
+// ---------- Controls ----------
+el("toggleSimBtn").onclick = ()=>{
+  state.running = !state.running;
+  el("toggleSimBtn").textContent = state.running ? "Pause" : "Resume";
+  setToast(state.running ? `⏱️ Simulation resumed.` : `⏸️ Simulation paused.`, "neutral");
+  render();
+};
+
+el("demolishBtn").onclick = ()=>{
+  state.demolishMode = !state.demolishMode;
+  el("demolishBtn").textContent = state.demolishMode ? "On" : "Off";
+  el("demolishBtn").classList.toggle("danger", state.demolishMode);
+  setToast(state.demolishMode ? `<strong>Demolish mode ON.</strong> Click a tile to remove.` : `Demolish mode off.`, "neutral");
+};
+
+el("claimContractBtn").onclick = ()=>{
+  newContract();
+  render();
+};
+
+el("surveyBtn").onclick = ()=>{
+  if(!state.roverOwned) return;
+  roverSurvey();
+  render();
+};
+
+el("launchBtn").onclick = ()=>{
+  if(el("launchBtn").disabled) return;
+
+  setToast(`${px('rocket','Launch')} <strong>Launch successful!</strong> Arriving at next planet...`, "good");
+
+  // carry some resources
+  const carryCredits = Math.floor(state.credits * 0.6);
+  const carryMetal = Math.floor(state.metal * 0.6);
+  const carryRP = Math.floor(state.rp * 0.4);
+
+  // next planet
+  state.planetIndex = Math.min(PLANETS.length-1, state.planetIndex+1);
+  applyPlanetPalette();
+  genTerrain();
+  state.cycle = 0;
+  state.stableStreak = 0;
+
+  // reset economy baseline
+  state.air = 10; state.water = 10; state.food = 10; state.power = 0;
+  state.credits = carryCredits + 50;
+  state.metal = carryMetal + 28;
+  state.rp = carryRP;
+  state.morale = clamp(state.morale, 50, 90);
+  state.pop = 4;
+
+  // clear hazards flags
+  state._quakeBoost = false;
+  state._growthBrake = false;
+
+  // contracts reset
+  state.contractActive = false;
+  state.contractTemplate = null;
+  state.contract = null;
+
+  // grid reset, keep rover owned (you can change this rule later)
+  grid = Array.from({length: W*H}, () => null);
+
+  // landing pad center
+  grid[Math.floor((W*H)/2)] = { key:"LandingPad", level: 1 };
+
+  setToast(` <strong>${getPlanet().name}</strong>: ${getPlanet().rule}`, "neutral");
+  render();
+};
+
+// CRT toggle
+el("crtBtn").onclick = ()=>{
+  state.crt = !state.crt;
+  document.body.classList.toggle("crtOn", state.crt);
+  el("crtBtn").textContent = `CRT: ${state.crt ? "On" : "Off"}`;
+  setToast(` CRT mode ${state.crt ? "enabled" : "disabled"}.`, "neutral");
+};
+
+// Role select setup
+function initRoleSelect(){
+  const s = el("roleSelect");
+  s.innerHTML = "";
+  Object.keys(ROLES).forEach(k=>{
+    const o = document.createElement("option");
+    o.value = k;
+    o.textContent = `${ROLES[k].name}`;
+    s.appendChild(o);
+  });
+  s.value = state.roleKey;
+  s.onchange = ()=>{
+    state.roleKey = s.value;
+    setToast(` Role set to <strong>${role().name}</strong>.`, "good");
+    render();
+  };
+}
+
+// ---------- Meters / KPIs ----------
+function renderMeters(){
+  const wrap = el("topbars");
+  wrap.innerHTML = "";
+  METERS.forEach(m=>{
+    const v = state[m.key];
+    const pct = clamp(((v - m.min)/(m.max - m.min))*100, 0, 100);
+    const div = document.createElement("div");
+    div.className="meter";
+    const status = (m.key==="morale")
+      ? (v>=55 ? "good" : v<=35 ? "bad" : "")
+      : (v>=0 ? "good" : v<=-10 ? "bad" : "");
+    div.innerHTML = `
+      <div class="label mono"><span>${m.label}</span><span>${fmt(v)}</span></div>
+      <div class="bar ${status}"><i style="width:${pct}%"></i></div>
+    `;
+    wrap.appendChild(div);
+  });
+
+  el("cycleBadge").textContent = `Cycle: ${state.cycle}`;
+  el("rpBadge").textContent = `RP: ${Math.floor(state.rp)}`;
+  el("repBadge").textContent = `Rep: ${REP_NAMES[state.rep]}`;
+  // Update top-right totals
+  el("creditsTotal").textContent = Math.floor(state.credits);
+  el("metalTotal").textContent = Math.floor(state.metal);
+
+  el("planetBadge").textContent = `Planet: ${getPlanet().name}`;
+  el("goalBadge").textContent = `Goal: City-Ready streak ${state.stableStreak}/20`;
+
+  el("kpiPop").textContent = state.pop;
+  el("kpiStreak").textContent = state.stableStreak;
+  el("kpiStable").textContent = isStable() ? "Yes" : "No";
+  el("kpiDistricts").textContent = grid.filter(x=>x?.key?.startsWith("District")).length;
+
+  // rover text
+  el("roverText").textContent =
+    state.roverOwned ? "Rover ready. Mining boosted. Survey available." :
+    (state.unlocked.has("RoverGarage") ? "Buy a rover (requires Rover Garage)." : "No rover owned.");
+
+  el("surveyBtn").disabled = !state.roverOwned;
+
+  el("roleBadge").textContent = `Role: ${role().name}`;
+}
+
+// ---------- Main render ----------
+function render(){
+  // role text
+  el("roleName").textContent = role().name;
+  el("roleDesc").textContent = role().desc;
+  el("roleBonusText").textContent = "Bonuses: " + role().bonuses.join(" • ");
+
+  // build menu
+  const buildList = el("buildList");
+  buildList.innerHTML = "";
+  buildList.appendChild(buildMenuHTML());
+
+  // research
+  const tree = el("researchTree");
+  tree.innerHTML = "";
+  tree.appendChild(researchUI());
+
+  // imports
+  const imp = el("imports");
+  imp.innerHTML = "";
+  imp.appendChild(importsUI());
+
+  // grid
+  const g = el("grid");
+  g.innerHTML = "";
+  for(let i=0;i<grid.length;i++){
+    g.appendChild(tileNode(i));
+  }
+
+  // launch button
+  const hasLaunch = grid.some(x=>x?.key==="Launch");
+  el("launchBtn").disabled = !(hasLaunch && state.pop >= 35 && state.stableStreak >= 20 && isStable());
+
+  // sim state
+  el("simState").textContent = state.running ? "Running (1 cycle/sec)" : "Paused";
+
+  renderMeters();
+}
+
+// ---------- Game loop ----------
+setInterval(()=>{ if(state.running) applyCycle(); }, 1000);
+
+// ---------- Init ----------
+document.body.classList.toggle("crtOn", state.crt);
+el("crtBtn").textContent = `CRT: ${state.crt ? "On" : "Off"}`;
+initRoleSelect();
+
+// Currency HUD: collapse + intelligent dock
+
+(function(){
+  const hud = document.getElementById("currencyHUD");
+  const head = document.getElementById("currencyHead");
+  const tog = document.getElementById("currencyToggle");
+  const topbars = document.getElementById("topbars");
+  const minimap = document.getElementById("minimap");
+  if(!hud || !head || !tog) return;
+
+  const keyCollapsed="pixelcoop_currency_collapsed";
+  const keyPos="pixelcoop_currency_pos"; // stores snap name
+  const SNAP = [
+    {name:"tr", x:()=>window.innerWidth-12, y:()=>12, ax:1, ay:0},
+    {name:"tl", x:()=>12, y:()=>12, ax:0, ay:0},
+    {name:"mr", x:()=>window.innerWidth-12, y:()=>96, ax:1, ay:0},
+    {name:"ml", x:()=>12, y:()=>96, ax:0, ay:0},
+    {name:"br", x:()=>window.innerWidth-12, y:()=>window.innerHeight-12, ax:1, ay:1},
+    {name:"bl", x:()=>12, y:()=>window.innerHeight-12, ax:0, ay:1},
+  ];
+
+  function rect(el){ return el ? el.getBoundingClientRect() : null; }
+  function intersects(a,b){
+    if(!a || !b) return false;
+    return !(a.right < b.left || a.left > b.right || a.bottom < b.top || a.top > b.bottom);
+  }
+
+  function setAt(x,y,ax,ay){
+    const r = hud.getBoundingClientRect();
+    const left = Math.round(x - (ax ? r.width : 0));
+    const top  = Math.round(y - (ay ? r.height : 0));
+    hud.style.left = left + "px";
+    hud.style.top  = top + "px";
+    hud.style.right = "auto";
+    hud.style.bottom = "auto";
+  }
+
+  function applySnap(name){
+    const s = SNAP.find(p=>p.name===name) || SNAP[0];
+    // temporarily show to get correct size when collapsed/expanded
+    setAt(s.x(), s.y(), s.ax, s.ay);
+    localStorage.setItem(keyPos, name);
+  }
+
+  function bestNonColliding(preferredName){
+    const pref = SNAP.find(p=>p.name===preferredName) || SNAP[0];
+    // sort snap points by distance to preferred anchor
+    const pts = [...SNAP].sort((a,b)=>{
+      const da = Math.hypot(a.x()-pref.x(), a.y()-pref.y());
+      const db = Math.hypot(b.x()-pref.x(), b.y()-pref.y());
+      return da-db;
+    });
+
+    for(const p of pts){
+      setAt(p.x(), p.y(), p.ax, p.ay);
+      const hr = rect(hud);
+      const collide = intersects(hr, rect(topbars)) || intersects(hr, rect(minimap));
+      if(!collide){
+        localStorage.setItem(keyPos, p.name);
+        return;
+      }
+    }
+    // if all collide, keep preferred
+    applySnap(preferredName);
+  }
+
+  
+  // Collapse state
+  const wasCollapsed = localStorage.getItem(keyCollapsed)==="1";
+  if(wasCollapsed){ hud.classList.add("collapsed"); tog.textContent="+"; }
+
+  function setCollapsed(collapsed){
+    hud.classList.toggle("collapsed", collapsed);
+    tog.textContent = collapsed ? "+" : "−";
+    localStorage.setItem(keyCollapsed, collapsed ? "1" : "0");
+    const cur = localStorage.getItem(keyPos) || "tr";
+    bestNonColliding(cur);
+  }
+
+  // Pointer interactions:
+  // - Tap/click header toggles collapse.
+  // - Drag header moves HUD, snaps on release.
+  let dragging=false, moved=false, startX=0, startY=0, oLeft=0, oTop=0;
+  const DRAG_THRESH = 6;
+
+  function pointerDown(ev){
+    dragging=true; moved=false;
+    startX = ev.clientX; startY = ev.clientY;
+    const r = hud.getBoundingClientRect();
+    oLeft = r.left; oTop = r.top;
+    head.setPointerCapture(ev.pointerId);
+  }
+  function pointerMove(ev){
+    if(!dragging) return;
+    const dx = ev.clientX - startX;
+    const dy = ev.clientY - startY;
+    if(!moved && (Math.abs(dx) > DRAG_THRESH || Math.abs(dy) > DRAG_THRESH)){
+      moved=true;
+      hud.classList.add("dragging");
+    }
+    if(!moved) return;
+    hud.style.left = Math.round(oLeft + dx) + "px";
+    hud.style.top  = Math.round(oTop + dy) + "px";
+    hud.style.right="auto"; hud.style.bottom="auto";
+  }
+  function pointerUp(ev){
+    if(!dragging) return;
+    dragging=false;
+
+    if(!moved){
+      // Treat as click/tap toggle
+      const collapsed = !hud.classList.contains("collapsed");
+      setCollapsed(collapsed);
+      try{ head.releasePointerCapture(ev.pointerId); }catch(e){}
+      return;
+    }
+
+    // Drag end: snap to nearest point
+    const r = hud.getBoundingClientRect();
+    const cx = r.left + r.width/2;
+    const cy = r.top + r.height/2;
+
+    let best = SNAP[0], bestD = Infinity;
+    for(const p of SNAP){
+      const pr = hud.getBoundingClientRect();
+      const ax = p.x() - (p.ax ? pr.width : 0) + pr.width/2;
+      const ay = p.y() - (p.ay ? pr.height : 0) + pr.height/2;
+      const d = Math.hypot(cx-ax, cy-ay);
+      if(d < bestD){ bestD = d; best = p; }
+    }
+    applySnap(best.name);
+    // collision resolve: move only if overlapping meters/minimap
+    bestNonColliding(best.name);
+
+    hud.classList.remove("dragging");
+    try{ head.releasePointerCapture(ev.pointerId); }catch(e){}
+  }
+
+  head.addEventListener("pointerdown", pointerDown);
+  head.addEventListener("pointermove", pointerMove);
+  head.addEventListener("pointerup", pointerUp);
+  head.addEventListener("pointercancel", pointerUp);
+
+// Initial position + collision resolve
+  const saved = localStorage.getItem(keyPos) || "tr";
+  applySnap(saved);
+  bestNonColliding(saved);
+
+  window.addEventListener("resize", ()=>{
+    const cur = localStorage.getItem(keyPos) || "tr";
+    // keep the same snap, then resolve collisions
+    applySnap(cur);
+    bestNonColliding(cur);
+  });
+})();
+
+
+
+// Starting: center landing pad
+grid[Math.floor((W*H)/2)] = { key:"LandingPad", level: 1 };
+
+// Soft nudge: refinery & lab are researched, not default
+state.contractTarget = 10;
+
+setToast(` <strong>Landing site established.</strong> Research unlocks districts/rovers/upgrades.`, "good");
+render();
+</script>
+</body>
+</html>
