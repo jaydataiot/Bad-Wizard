@@ -38,6 +38,32 @@
     position:absolute; inset:auto 16px -20px auto; width:140px; height:140px; opacity:.18; pointer-events:none;
     filter:drop-shadow(0 0 6px rgba(201,44,44,.35));
   }
+  .games-logo-link{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:58px;
+    height:58px;
+    margin-top:12px;
+    border:1px solid #342727;
+    border-radius:10px;
+    background:#161111;
+    overflow:hidden;
+    transition:background .18s ease, border-color .18s ease, transform .18s ease;
+  }
+  .games-logo-link:hover,
+  .games-logo-link:focus-visible{
+    background:#2a1c1c;
+    border-color:var(--accent);
+    transform:translateY(-2px);
+    outline:none;
+  }
+  .games-logo-link img{
+    display:block;
+    width:48px;
+    height:48px;
+    object-fit:contain;
+  }
 
   /* ===== Occult decorative frame ===== */
   .occult-frame{
@@ -243,13 +269,6 @@
     border-color:#c92c2c;
     color:#ffd5d5;
   }
-  .board-image {
-    display: block;
-    width: 100%;
-    height: auto;
-    border-radius: 18px;
-    object-fit: contain;
-  }
 </style>
 </head>
 <body>
@@ -262,12 +281,9 @@
   </svg>
   <h1>CULT LEADER <span class="small">— browser edition</span></h1>
   <div class="tagline">Build your flock · Construct your temple · Evade the eye of the State</div>
-  <button class="btn" onclick="if(history.length > 1){history.back();}else{window.location.href='../../index.html#games';}"> 
-    <img src="../../assets/logo_switched.png"
-    alt="Prototype Cult Leader tabletop game board"
-    class="board-image"
-    >
-  </button>
+  <a class="games-logo-link" href="../../index.html#games" aria-label="Back to Games">
+    <img src="../../assets/logo_switched.png" alt="Bad Wizard Games">
+  </a>
 </header>
 
 <!-- Occult frame wrapper START -->
