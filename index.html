@@ -491,59 +491,6 @@
     @media(prefers-reduced-motion:reduce){.wizard-guide,.wizard-guide__character,.wizard-staff::before{animation:none!important;transition:none!important}.wizard-guide.is-entering{right:16px;bottom:16px}.wizard-trail{display:none}}
 
 
-/* Enhanced Malgrin hair, beard, ears, and gaze */
-.wizard-svg__hair-lock,
-.wizard-svg__beard-lock,
-.wizard-svg__braid,
-.wizard-svg__ear-detail {
-  transform-box: fill-box;
-  transform-origin: top center;
-}
-
-.wizard-svg__hair-lock:nth-child(odd){animation:hairLockA 5.6s ease-in-out infinite}
-.wizard-svg__hair-lock:nth-child(even){animation:hairLockB 6.1s ease-in-out infinite}
-.wizard-svg__beard-lock:nth-child(odd){animation:beardLockA 4.9s ease-in-out infinite}
-.wizard-svg__beard-lock:nth-child(even){animation:beardLockB 5.3s ease-in-out infinite}
-.wizard-svg__braid{animation:braidSway 5.4s ease-in-out infinite}
-
-.wizard-guide__character.is-talking .wizard-svg__beard-lock{
-  animation-duration:.42s;
-}
-.wizard-guide__character.is-talking .wizard-svg__braid{
-  animation-duration:.48s;
-}
-
-.wizard-svg__pupil{
-  transition: transform .12s ease-out;
-  will-change: transform;
-}
-
-.wizard-svg__ear-detail{
-  opacity:.55;
-}
-
-@keyframes hairLockA{
-  0%,100%{transform:rotate(-1.5deg) translateY(0)}
-  50%{transform:rotate(3deg) translateY(2px)}
-}
-@keyframes hairLockB{
-  0%,100%{transform:rotate(1.2deg) translateY(0)}
-  50%{transform:rotate(-2.5deg) translateY(1px)}
-}
-@keyframes beardLockA{
-  0%,100%{transform:rotate(-1deg) translateY(0)}
-  50%{transform:rotate(2.5deg) translateY(2px)}
-}
-@keyframes beardLockB{
-  0%,100%{transform:rotate(1deg) translateY(0)}
-  50%{transform:rotate(-2deg) translateY(2px)}
-}
-@keyframes braidSway{
-  0%,100%{transform:rotate(-1deg)}
-  50%{transform:rotate(2deg)}
-}
-
-
 /* =================================================
    MALGRIN STATIC-IMAGE CHATBOT
    Uses the supplied wizard artwork with live text.
@@ -2209,6 +2156,19 @@ document.querySelectorAll(".btn, .btn-outline, .brand").forEach((element) => {
     return line;
   }
 
+  function getResponseDisplayTime(text) {
+    const normalized = String(text || '').trim();
+    const wordCount = normalized ? normalized.split(/\s+/).length : 0;
+    const punctuationCount = (normalized.match(/[.!?;:]/g) || []).length;
+    const paragraphCount = Math.max(0, normalized.split(/\n\s*\n/).length - 1);
+
+    // 175 words per minute, plus short pauses for punctuation and paragraphs.
+    const readingTime = (wordCount / 175) * 60_000;
+    const pauseTime = (punctuationCount * 160) + (paragraphCount * 700);
+
+    return Math.max(15_000, Math.min(180_000, 4_000 + readingTime + pauseTime));
+  }
+
   function speak(line, duration = 7200) {
     if (!line || state.dismissed) return;
     clearTimeout(state.hideTimer);
@@ -2293,7 +2253,8 @@ document.querySelectorAll(".btn, .btn-outline, .brand").forEach((element) => {
       }
 
       if (!answer.trim()) throw new Error('The assistant returned an empty answer');
-      speak(answer.trim(), Math.max(12000, Math.min(30000, answer.length * 55)));
+      const completedAnswer = answer.trim();
+      speak(completedAnswer, getResponseDisplayTime(completedAnswer));
       promptInput.value = '';
       promptStatus.textContent = 'Answer powered by the Bad Wizard AI assistant.';
     } catch (error) {
