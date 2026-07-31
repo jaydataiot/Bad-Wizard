@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="A curated gallery of Bad Wizard Games boxes, boards, cards, components, and gameplay.">
+  <meta name="theme-color" content="#120f18">
+  <title>The Game Cabinet — Bad Wizard Games</title>
+  <link rel="icon" href="assets/logo.png">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=League+Spartan:wght@600;700;800&display=swap');
+    :root{--ink:#120f18;--paper:#eee6d7;--orange:#e7562f;--acid:#e9c64a;--violet:#7c5ce0;--line:rgba(238,230,215,.18);--muted:#a9a1ae;--display:"League Spartan",sans-serif;--body:"DM Sans",sans-serif}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--body);line-height:1.5;overflow-x:hidden}a{color:inherit}button{font:inherit}img{display:block;max-width:100%}
+    .wrap{width:min(1240px,calc(100% - 40px));margin:auto}.eyebrow{font:700 12px var(--display);text-transform:uppercase;letter-spacing:.18em;color:var(--acid)}
+    header{position:fixed;inset:0 0 auto;z-index:30;background:linear-gradient(180deg,rgba(18,15,24,.95),rgba(18,15,24,.35),transparent)}
+    .nav{height:86px;display:flex;align-items:center;gap:16px}.brand{display:flex;align-items:center;gap:11px;text-decoration:none;font:800 15px var(--display);letter-spacing:.04em;text-transform:uppercase}.brand img{width:42px;height:42px;object-fit:contain;filter:invert(1)}.nav-links{margin-left:auto;display:flex;gap:24px;align-items:center}.nav-links a{text-decoration:none;font-size:13px;font-weight:700}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:1px solid var(--paper);border-radius:999px;padding:11px 17px;background:var(--paper);color:var(--ink);font-weight:800;text-decoration:none;cursor:pointer;transition:.2s}.btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.28)}.btn.ghost{background:transparent;color:var(--paper);border-color:var(--line)}
+    .hero{min-height:94svh;position:relative;display:grid;align-items:end;padding:140px 0 74px;overflow:hidden;background:#19151e}
+    .hero-bg{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,1fr);transform:rotate(-5deg) scale(1.17);opacity:.5;filter:saturate(.78)}
+    .hero-bg img{height:115%;width:100%;object-fit:cover}.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(18,15,24,.98) 0%,rgba(18,15,24,.76) 46%,rgba(18,15,24,.25)),linear-gradient(0deg,var(--ink),transparent 45%)}
+    .hero-copy{position:relative;z-index:2;max-width:830px}h1,h2,h3{font-family:var(--display);text-transform:uppercase;letter-spacing:-.045em}h1{font-size:clamp(4rem,10vw,9.2rem);line-height:.78;margin:17px 0 28px}h1 span{color:var(--orange)}.hero p{max-width:620px;font-size:clamp(1rem,1.7vw,1.25rem);color:#d6d0d9}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
+    .ticker{border-block:1px solid var(--line);overflow:hidden;background:var(--orange);color:var(--ink)}.ticker-track{display:flex;width:max-content;animation:scroll 24s linear infinite}.ticker span{font:800 15px var(--display);padding:14px 26px;text-transform:uppercase;letter-spacing:.08em}.ticker b{margin-left:30px}@keyframes scroll{to{transform:translateX(-50%)}}
+    section{padding:90px 0;border-bottom:1px solid var(--line)}.section-head{display:grid;grid-template-columns:.75fr 1.25fr;gap:45px;align-items:end;margin-bottom:42px}.section-head h2{font-size:clamp(2.8rem,6vw,6rem);line-height:.84;margin:0}.section-head p{color:var(--muted);max-width:590px;margin:10px 0 0}
+    .filters{display:flex;gap:9px;flex-wrap:wrap;margin-bottom:30px}.filter{border:1px solid var(--line);background:transparent;color:var(--paper);padding:9px 14px;border-radius:999px;cursor:pointer;font-weight:700;font-size:13px}.filter.active{background:var(--paper);color:var(--ink)}
+    .gallery{display:grid;grid-template-columns:repeat(12,1fr);gap:18px}.tile{position:relative;border-radius:18px;overflow:hidden;background:#26202d;min-height:410px;cursor:pointer}.tile:nth-child(1),.tile:nth-child(4){grid-column:span 7}.tile:nth-child(2),.tile:nth-child(3){grid-column:span 5}.tile:nth-child(5){grid-column:span 5}.tile:nth-child(6){grid-column:span 7}.tile img{width:100%;height:100%;object-fit:cover;transition:.5s cubic-bezier(.2,.7,.2,1)}.tile:hover img{transform:scale(1.045)}.tile:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 42%,rgba(7,5,10,.9))}.tile-info{position:absolute;inset:auto 24px 20px;z-index:2;display:flex;justify-content:space-between;gap:20px;align-items:end}.tile h3{font-size:clamp(1.6rem,3vw,2.7rem);margin:0;line-height:.9}.tile p{margin:5px 0 0;color:#d1cad5;font-size:13px}.index{font:700 13px var(--display);color:var(--acid)}
+    .products{display:grid;grid-template-columns:repeat(3,1fr);gap:42px}.product{text-align:center}.box-stage{height:460px;display:grid;place-items:center;perspective:900px}.box{width:235px;height:350px;position:relative;transform-style:preserve-3d;transform:rotateY(-24deg) rotateX(4deg);transition:.5s}.product:hover .box{transform:rotateY(-11deg) rotateX(1deg) translateY(-9px)}.box-front{position:absolute;inset:0;background:#222;box-shadow:12px 18px 40px rgba(0,0,0,.42);overflow:hidden}.box-front img{width:100%;height:100%;object-fit:cover}.box-side{position:absolute;width:42px;height:350px;right:-42px;transform-origin:left;transform:rotateY(90deg);background:var(--orange);display:grid;place-items:center;border-left:1px solid rgba(0,0,0,.4)}.box-side span{writing-mode:vertical-rl;font:800 16px var(--display);color:var(--ink);text-transform:uppercase}.product h3{font-size:28px;margin:3px 0 2px}.product p{margin:0;color:var(--muted);font-size:14px}
+    .tabletop{display:grid;grid-template-columns:1.15fr .85fr;min-height:650px;border-radius:26px;overflow:hidden;background:#241d28}.board{position:relative;display:grid;place-items:center;padding:48px;background:radial-gradient(circle at center,#785d3c,#382b25 67%,#211a19)}.board-sheet{width:min(90%,620px);aspect-ratio:1;transform:rotate(-4deg);background:var(--paper);border:10px solid #19151e;display:grid;grid-template-columns:repeat(6,1fr);padding:8%;box-shadow:0 25px 50px rgba(0,0,0,.45)}.space{border:1px solid rgba(18,15,24,.28);display:grid;place-items:center;color:#342d38;font:700 11px var(--display)}.space:nth-child(3n){background:rgba(231,86,47,.28)}.space:nth-child(4n){background:rgba(124,92,224,.24)}.pawn{position:absolute;width:34px;height:46px;border-radius:50% 50% 36% 36%;background:var(--orange);box-shadow:0 10px 16px rgba(0,0,0,.4)}.pawn.one{left:26%;top:30%}.pawn.two{right:25%;bottom:28%;background:var(--violet)}.die{position:absolute;width:48px;height:48px;border-radius:8px;background:var(--paper);color:var(--ink);display:grid;place-items:center;font-size:25px;box-shadow:0 8px 15px #0006;right:13%;top:17%;transform:rotate(13deg)}.component-panel{padding:48px;display:flex;flex-direction:column;justify-content:center}.component-panel h2{font-size:clamp(2.5rem,5vw,5rem);line-height:.85;margin:16px 0 22px}.component-panel p{color:var(--muted)}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:26px 0}.stat{border-top:1px solid var(--line);padding-top:12px}.stat strong{font:800 22px var(--display);display:block}.stat span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+    .cards{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}.game-card{aspect-ratio:.7;border-radius:14px;overflow:hidden;position:relative;box-shadow:0 18px 30px rgba(0,0,0,.28);transition:.25s}.game-card:nth-child(even){transform:translateY(32px) rotate(2deg)}.game-card:nth-child(odd){transform:rotate(-2deg)}.game-card:hover{transform:translateY(-10px) rotate(0);z-index:3}.game-card img{width:100%;height:100%;object-fit:cover}.game-card:after{content:"";position:absolute;inset:8px;border:1px solid rgba(238,230,215,.55);border-radius:9px}
+    .quote{padding:110px 0;text-align:center}.quote blockquote{font:800 clamp(2.8rem,7vw,7rem)/.88 var(--display);text-transform:uppercase;letter-spacing:-.05em;margin:0 auto;max-width:1100px}.quote blockquote span{color:var(--orange)}
+    footer{padding:34px 0}.footer{display:flex;justify-content:space-between;gap:24px;color:var(--muted);font-size:13px}
+    dialog{width:min(920px,calc(100% - 28px));padding:0;border:0;border-radius:20px;background:#1f1924;color:var(--paper);box-shadow:0 30px 80px #000b}dialog::backdrop{background:rgba(5,3,7,.84);backdrop-filter:blur(9px)}.lightbox{display:grid;grid-template-columns:1fr .42fr}.lightbox img{width:100%;max-height:82vh;object-fit:contain;background:#0b090d}.lightbox-copy{padding:30px}.lightbox-copy h3{font-size:32px;margin:10px 0}.close{position:absolute;right:12px;top:12px;width:38px;height:38px;border:0;border-radius:50%;background:var(--paper);font-size:20px;cursor:pointer}
+    [hidden]{display:none!important}@media(max-width:900px){.hero-bg{grid-template-columns:repeat(3,1fr)}.hero-bg img:nth-child(n+4){display:none}.section-head,.tabletop{grid-template-columns:1fr}.products{grid-template-columns:1fr 1fr}.gallery .tile{grid-column:span 6}.cards{grid-template-columns:repeat(2,1fr)}.lightbox{grid-template-columns:1fr}.lightbox-copy{display:none}}
+    @media(max-width:620px){.wrap{width:calc(100% - 24px)}.nav-links a:not(.btn){display:none}h1{font-size:4rem}.gallery{display:block}.tile{margin-bottom:14px;min-height:460px}.products{grid-template-columns:1fr}.box-stage{height:410px}.tabletop{border-radius:16px}.board,.component-panel{padding:28px}.board{min-height:440px}.cards{gap:10px}.footer{flex-direction:column}.ticker-track{animation-duration:15s}}
+    @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+    .board-link {
+      display: block;
+      width: 100%;
+    }
+
+    .board-image {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 18px;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+  <header><div class="wrap nav"><a class="brand" href="index.html"><img src="assets/logo.png" alt="">Bad Wizard Games</a><nav class="nav-links" aria-label="Primary"><a href="#gallery">Gallery</a><a href="#boxes">Game boxes</a><a href="#components">Components</a><a class="btn" href="#gallery">Open cabinet ↘</a></nav></div></header>
+  <main>
+    <section class="hero">
+      <div class="hero-bg" aria-hidden="true"><img src="assets/games/10_31.jpg" alt=""><img src="assets/games/cult-leader.jpg" alt=""><img src="assets/games/double-wide.jpg" alt=""><img src="assets/games/gag_front.jpeg" alt=""><img src="assets/games/judge.jpg" alt=""><img src="assets/games/pixel_co_op.jpg" alt=""></div>
+      <div class="wrap hero-copy"><div class="eyebrow">The media archive · Collection 01</div><h1>The game<br><span>cabinet.</span></h1><p>A curated look inside the strange, sharp, and suspiciously entertaining worlds of Bad Wizard Games—from first shuffle to final accusation.</p><div class="hero-actions"><a class="btn" href="#gallery">Browse the collection ↓</a><a class="btn ghost" href="brand-assets.html">Brand assets ↗</a></div></div>
+    </section>
+    <div class="ticker" aria-hidden="true"><div class="ticker-track"><span>Boxes <b>✦</b> Boards <b>✦</b> Cards <b>✦</b> Components <b>✦</b> Gameplay <b>✦</b></span><span>Boxes <b>✦</b> Boards <b>✦</b> Cards <b>✦</b> Components <b>✦</b> Gameplay <b>✦</b></span></div></div>
+
+    <section id="gallery"><div class="wrap"><div class="section-head"><div class="eyebrow">01 · Selected worlds</div><div><h2>Six ways to ruin game night.</h2><p>Every title begins with a bold visual premise. Select any image for a closer look at the artwork.</p></div></div>
+      <div class="filters" role="group" aria-label="Filter gallery"><button class="filter active" data-filter="all">All titles</button><button class="filter" data-filter="dark">Dark & strange</button><button class="filter" data-filter="social">Social play</button><button class="filter" data-filter="strategy">Strategy</button></div>
+      <div class="gallery">
+        <article class="tile" data-category="dark" tabindex="0" data-title="10.31.84" data-caption="A Halloween-night murder mystery steeped in analog dread."><img src="assets/games/10_31.jpg" alt="10.31.84 game cover"><div class="tile-info"><div><h3>10.31.84</h3><p>Deduction · 3–8 players</p></div><span class="index">01</span></div></article>
+        <article class="tile" data-category="social" tabindex="0" data-title="Cult Leader" data-caption="Build devotion, seize influence, and keep your followers in line."><img src="assets/games/cult-leader.jpg" alt="Cult Leader game cover"><div class="tile-info"><div><h3>Cult Leader</h3><p>Social strategy · 4–10 players</p></div><span class="index">02</span></div></article>
+        <article class="tile" data-category="social" tabindex="0" data-title="Double Wide" data-caption="A loud, scrappy neighborhood showdown where grudges become currency."><img src="assets/games/double-wide.jpg" alt="Double Wide game cover"><div class="tile-info"><div><h3>Double Wide</h3><p>Party rivalry · 3–6 players</p></div><span class="index">03</span></div></article>
+        <article class="tile" data-category="dark" tabindex="0" data-title="Grab a Ghost" data-caption="Catch ’em, trap ’em, and pray you make it out of the house."><img src="assets/games/gag_front.jpeg" alt="Grab a Ghost game cover"><div class="tile-info"><div><h3>Grab a Ghost</h3><p>Horror tactics · 2–6 players</p></div><span class="index">04</span></div></article>
+        <article class="tile" data-category="strategy" tabindex="0" data-title="The Judge’s Eye" data-caption="Argue the evidence, sway the room, and decide the verdict."><img src="assets/games/judge.jpg" alt="The Judge's Eye game cover"><div class="tile-info"><div><h3>The Judge’s Eye</h3><p>Debate · 5–12 players</p></div><span class="index">05</span></div></article>
+        <article class="tile" data-category="strategy" tabindex="0" data-title="Pixel Co-op" data-caption="Work together to build a brighter, stranger future."><img src="assets/games/pixel_co_op.jpg" alt="Pixel Co-op game cover"><div class="tile-info"><div><h3>Pixel Co-op</h3><p>Cooperative strategy · 2–5 players</p></div><span class="index">06</span></div></article>
+      </div>
+    </div></section>
+
+    <section id="boxes"><div class="wrap"><div class="section-head"><div class="eyebrow">02 · On the shelf</div><div><h2>Made to stop the scroll.</h2><p>Distinctive, tactile packaging built to make each strange premise instantly legible—from across the shop or across the table.</p></div></div>
+      <div class="products">
+        <article class="product"><div class="box-stage"><div class="box"><div class="box-front"><img src="assets/games/10_31.jpg" alt="10.31.84 box front"></div><div class="box-side"><span>10.31.84</span></div></div></div><h3>10.31.84</h3><p>Tall box · Murder mystery</p></article>
+        <article class="product"><div class="box-stage"><div class="box"><div class="box-front"><img src="assets/games/cult-leader.jpg" alt="Cult Leader box front"></div><div class="box-side"><span>Cult Leader</span></div></div></div><h3>Cult Leader</h3><p>Tall box · Social strategy</p></article>
+        <article class="product"><div class="box-stage"><div class="box"><div class="box-front"><img src="assets/games/pixel_co_op.jpg" alt="Pixel Co-op box front"></div><div class="box-side"><span>Pixel Co-op</span></div></div></div><h3>Pixel Co-op</h3><p>Square box · Cooperative play</p></article>
+      </div>
+    </div></section>
+
+    <section id="components">
+      <div class="wrap">
+        <div class="tabletop">
+          <div class="board">
+            <a
+              class="board-link"
+              href="assets/game_pieces/cult-leader-game-board.png"
+              target="_blank"
+              rel="noopener"
+              aria-label="View the full-size Cult Leader game board"
+            >
+              <center>Prototype Cult Leader tabletop game board</center>
+              <img
+                src="assets/game_pieces/cult-leader-game-board.png"
+                alt="Prototype Cult Leader tabletop game board"
+                class="board-image"
+              >
+            </a>
+          </div>
+
+          <div class="component-panel">
+            <div class="eyebrow">03 · On the table</div>
+            <h2>Pieces with personality.</h2>
+            <p>
+              Readable at a glance, satisfying in the hand, and tuned for the
+              glorious mess that happens once everybody starts playing.
+            </p>
+
+            <div class="stats">
+              <div class="stat">
+                <strong>120+</strong>
+                <span>Unique cards</span>
+              </div>
+              <div class="stat">
+                <strong>6</strong>
+                <span>Game worlds</span>
+              </div>
+              <div class="stat">
+                <strong>∞</strong>
+                <span>Bad decisions</span>
+              </div>
+            </div>
+
+            <a class="btn" href="#cards">See the card art ↓</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="cards"><div class="wrap"><div class="section-head"><div class="eyebrow">04 · In your hand</div><div><h2>Small cards. Big trouble.</h2><p>Each card borrows the visual language of its world, creating a mixed cabinet of pulp mysteries, courtroom drama, analog horror, and pixel futures.</p></div></div>
+      <div class="cards"><div class="game-card"><img src="assets/games/cult-leader.jpg" alt="Cult Leader card concept"></div><div class="game-card"><img src="assets/games/10_31.jpg" alt="10.31.84 card concept"></div><div class="game-card"><img src="assets/games/gag_front.jpeg" alt="Grab a Ghost card concept"></div><div class="game-card"><img src="assets/games/judge.jpg" alt="The Judge's Eye card concept"></div></div>
+    </div></section>
+
+    <section id="cards"><div class="wrap"><div class="section-head"><div class="eyebrow">05 · Play cards</div><div><h2> from your deck with limitless possibilities</h2><p>    Build your perfect deck with game cards that can change the course of every match..</p></div></div>
+      <div class="cards"><div class="game-card"><img src="assets/cards/Betrayals.png" alt="Cult Leader card concept"></div><div class="game-card"><img src="assets/cards/Earl.png" alt="Double Wide card concept"></div><div class="game-card"><img src="assets/cards/Event_Deck.png" alt="Cult Leader card concept"></div><div class="game-card"><img src="assets/cards/jeanine.png" alt="Double WIde card concept"></div></div>
+    </div></section>
+
+    <section class="quote"><div class="wrap"><div class="eyebrow">Bad Wizard Games</div><blockquote>Games for people who enjoy <span>making a scene.</span></blockquote></div></section>
+  </main>
+  <footer><div class="wrap footer"><span>© 2026 Bad Wizard Games</span><span>Boxes · Boards · Cards · Components · Gameplay</span></div></footer>
+
+  <dialog id="viewer"><button class="close" aria-label="Close image">×</button><div class="lightbox"><img src="" alt=""><div class="lightbox-copy"><div class="eyebrow">From the cabinet</div><h3></h3><p class="caption"></p></div></div></dialog>
+  <script>
+    const filters=[...document.querySelectorAll('.filter')], tiles=[...document.querySelectorAll('.tile')], viewer=document.querySelector('#viewer');
+    filters.forEach(button=>button.addEventListener('click',()=>{filters.forEach(b=>b.classList.remove('active'));button.classList.add('active');tiles.forEach(tile=>tile.hidden=button.dataset.filter!=='all'&&tile.dataset.category!==button.dataset.filter)}));
+    function openTile(tile){const image=tile.querySelector('img');viewer.querySelector('img').src=image.src;viewer.querySelector('img').alt=image.alt;viewer.querySelector('h3').textContent=tile.dataset.title;viewer.querySelector('.caption').textContent=tile.dataset.caption;viewer.showModal()}
+    tiles.forEach(tile=>{tile.addEventListener('click',()=>openTile(tile));tile.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openTile(tile)}})});
+    viewer.querySelector('.close').addEventListener('click',()=>viewer.close());viewer.addEventListener('click',e=>{if(e.target===viewer)viewer.close()});
+  </script>
+</body>
+</html>

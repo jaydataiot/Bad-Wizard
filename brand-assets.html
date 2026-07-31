@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Official Bad Wizard Games brand assets, colors, typography, imagery, and usage guidance.">
+  <meta name="theme-color" content="#101117">
+  <title>Brand Assets — Bad Wizard Games</title>
+  <link rel="icon" href="assets/logo.png">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap');
+    :root {
+      --ink:#101117; --paper:#f5f2eb; --cream:#ebe4d6; --white:#fff;
+      --violet:#8e6bff; --amber:#ffb84d; --coral:#ff6b4a; --muted:#696873;
+      --line:rgba(16,17,23,.14); --display:"Space Grotesk",sans-serif;
+      --body:"DM Sans",sans-serif; --radius:22px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth;scroll-padding-top:90px}
+    body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);line-height:1.55}
+    img{display:block;max-width:100%}
+    a{color:inherit}
+    button{font:inherit}
+    .wrap{width:min(1180px,calc(100% - 40px));margin:auto}
+    .eyebrow{font:700 12px var(--display);letter-spacing:.16em;text-transform:uppercase}
+    .muted{color:var(--muted)}
+    header{position:sticky;top:0;z-index:20;background:rgba(245,242,235,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--line)}
+    .nav{height:76px;display:flex;align-items:center;gap:22px}
+    .wordmark{display:flex;align-items:center;gap:11px;text-decoration:none;font:700 16px var(--display);letter-spacing:-.02em}
+    .wordmark img{width:42px;height:42px;object-fit:contain}
+    nav{margin-left:auto;display:flex;gap:24px;align-items:center}
+    nav a{font-weight:600;text-decoration:none;font-size:14px}
+    .button{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:12px 17px;border-radius:999px;border:1px solid var(--ink);background:var(--ink);color:var(--white);text-decoration:none;font-weight:700;font-size:14px;transition:.2s ease}
+    .button:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(16,17,23,.16)}
+    .button.light{background:transparent;color:var(--ink)}
+    .button.small{padding:9px 13px;font-size:13px}
+    .arrow{font-size:17px;line-height:1}
+    .hero{padding:90px 0 78px;position:relative;overflow:hidden}
+    .hero:after{content:"";position:absolute;right:-8vw;top:30px;width:430px;height:430px;border-radius:50%;background:conic-gradient(from 30deg,var(--amber),var(--coral),var(--violet),var(--amber));filter:blur(1px);opacity:.14;z-index:-1}
+    .hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:72px;align-items:end}
+    h1,h2,h3{font-family:var(--display);letter-spacing:-.045em}
+    h1{font-size:clamp(3.4rem,8vw,7.6rem);line-height:.88;margin:18px 0 28px;max-width:850px}
+    .hero p{font-size:clamp(1.05rem,1.8vw,1.3rem);max-width:650px;margin:0;color:var(--muted)}
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:32px}
+    .edition{border-left:1px solid var(--line);padding-left:30px}
+    .edition strong{display:block;font:700 32px var(--display);margin:5px 0 8px}
+    .edition p{font-size:14px}
+    section{padding:82px 0;border-top:1px solid var(--line)}
+    .section-head{display:grid;grid-template-columns:.62fr 1.38fr;gap:40px;margin-bottom:36px}
+    .section-head h2{font-size:clamp(2.2rem,5vw,4.6rem);line-height:.96;margin:0}
+    .section-head p{max-width:620px;margin:8px 0 0;font-size:17px}
+    .grid{display:grid;gap:18px}.grid.two{grid-template-columns:repeat(2,1fr)}.grid.three{grid-template-columns:repeat(3,1fr)}
+    .card{border:1px solid var(--line);border-radius:var(--radius);background:rgba(255,255,255,.56);overflow:hidden}
+    .preview{min-height:300px;display:grid;place-items:center;padding:44px;position:relative}
+    .preview.dark{background:var(--ink)}.preview.violet{background:var(--violet)}
+    .preview img{width:min(210px,70%);max-height:210px;object-fit:contain}
+    .preview.dark img,.preview.violet img{filter:drop-shadow(0 14px 22px rgba(0,0,0,.28))}
+    .card-info{padding:20px;display:flex;justify-content:space-between;gap:18px;align-items:center;border-top:1px solid var(--line)}
+    .card-info h3{margin:0 0 3px;font-size:18px;letter-spacing:-.025em}.card-info p{margin:0;font-size:13px;color:var(--muted)}
+    .colors{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+    .swatch{min-height:280px;padding:18px;display:flex;flex-direction:column;justify-content:flex-end}
+    .swatch strong{font-family:var(--display)}.swatch span{font-size:13px;margin-top:3px}
+    .swatch.ink{background:var(--ink);color:white}.swatch.violet{background:var(--violet);color:white}
+    .swatch.amber{background:var(--amber)}.swatch.coral{background:var(--coral)}.swatch.cream{background:var(--cream)}
+    .type-card{padding:32px;min-height:285px;display:flex;flex-direction:column;justify-content:space-between}
+    .type-card .sample{font:700 clamp(3.2rem,7vw,6.7rem)/.8 var(--display);letter-spacing:-.08em}
+    .type-card.body .sample{font:500 clamp(1.6rem,3vw,2.8rem)/1.15 var(--body);letter-spacing:-.04em}
+    .type-meta{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-top:36px}
+    .type-meta h3{margin:0}.type-meta p{margin:4px 0 0;font-size:13px}
+    .image-card{position:relative;min-height:380px;background:var(--ink)}
+    .image-card img{width:100%;height:100%;min-height:380px;object-fit:cover}
+    .image-card:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(16,17,23,.86))}
+    .image-label{position:absolute;left:22px;right:22px;bottom:20px;color:white;z-index:2;display:flex;justify-content:space-between;align-items:end}
+    .image-label h3{margin:0;font-size:20px}.image-label span{font-size:12px;opacity:.72}
+    .doc-card{padding:28px;display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center}
+    .doc-icon{width:68px;height:84px;border-radius:8px 16px 8px 8px;background:var(--coral);color:white;display:grid;place-items:center;font:700 13px var(--display);box-shadow:8px 8px 0 var(--amber)}
+    .doc-card h3{margin:0 0 4px;font-size:22px}.doc-card p{margin:0;font-size:14px}
+    .rules{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+    .rule{padding:26px}.rule-head{display:flex;align-items:center;gap:12px;margin-bottom:13px}
+    .mark{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:white;font-weight:800}
+    .mark.do{background:#1b8d61}.mark.dont{background:var(--coral)}
+    .rule h3{margin:0;font-size:20px}.rule p{margin:0;color:var(--muted)}
+    .contact{background:var(--ink);color:white;border-radius:30px;padding:clamp(34px,6vw,68px);display:flex;align-items:end;justify-content:space-between;gap:40px}
+    .contact h2{font-size:clamp(2.5rem,6vw,5.8rem);line-height:.95;margin:10px 0 0;max-width:740px}
+    .contact .button{background:var(--amber);border-color:var(--amber);color:var(--ink);white-space:nowrap}
+    footer{padding:30px 0 48px}.footer{display:flex;justify-content:space-between;gap:20px;font-size:13px;color:var(--muted)}
+    .toast{position:fixed;right:20px;bottom:20px;background:var(--ink);color:white;padding:12px 16px;border-radius:12px;font-size:14px;transform:translateY(90px);opacity:0;transition:.25s;z-index:40}
+    .toast.show{transform:none;opacity:1}
+    @media(max-width:850px){
+      nav a:not(.button){display:none}.hero-grid,.section-head{grid-template-columns:1fr}.hero-grid{gap:40px}.edition{border-left:0;border-top:1px solid var(--line);padding:22px 0 0}
+      .grid.three{grid-template-columns:1fr}.colors{grid-template-columns:1fr 1fr}.swatch{min-height:180px}.grid.two,.rules{grid-template-columns:1fr}.contact{align-items:flex-start;flex-direction:column}
+    }
+    @media(max-width:560px){.wrap{width:min(100% - 24px,1180px)}.hero{padding-top:60px}h1{font-size:3.7rem}.colors{grid-template-columns:1fr}.swatch{min-height:135px}.doc-card{grid-template-columns:auto 1fr}.doc-card .button{grid-column:1/-1}.preview{min-height:240px}.footer{flex-direction:column}}
+    @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="wrap nav">
+      <a class="wordmark" href="index.html"><img src="assets/logo.png" alt="">Bad Wizard Games</a>
+      <nav aria-label="Primary navigation">
+        <a href="#logos">Logos</a><a href="#colors">Color</a><a href="#type">Type</a><a href="#imagery">Imagery</a>
+        <a class="button small" href="assets/logo.png" download>Download logo <span class="arrow">↓</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <div class="eyebrow">Official brand resources · 2026</div>
+          <h1>Play bold.<br>Brand boldly.</h1>
+          <p>A practical toolkit for partners, retailers, press, and collaborators representing Bad Wizard Games in the world.</p>
+          <div class="hero-actions">
+            <a class="button" href="#logos">Explore assets <span class="arrow">↘</span></a>
+            <a class="button light" href="assets/catalog/BadWizard_Catalog_2026_Wave_1.pdf" download>Product catalog <span class="arrow">↓</span></a>
+          </div>
+        </div>
+        <aside class="edition" aria-label="Brand guide edition">
+          <div class="eyebrow">Current edition</div>
+          <strong>01 / 2026</strong>
+          <p>Approved for business, editorial, retail, event, and partner communications.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="logos">
+      <div class="wrap">
+        <div class="section-head"><div class="eyebrow">01 · Core identity</div><div><h2>Our mark, made to be noticed.</h2><p class="muted">Use the primary mark whenever space allows. Keep it clear, legible, and proudly weird.</p></div></div>
+        <div class="grid two">
+          <article class="card">
+            <div class="preview"><img src="assets/logo.png" alt="Bad Wizard Games primary logo on a light background"></div>
+            <div class="card-info"><div><h3>Primary logo</h3><p>Full color · Light backgrounds</p></div><a class="button small" href="assets/logo.png" download>PNG ↓</a></div>
+          </article>
+          <article class="card">
+            <div class="preview dark"><img src="assets/logo_switched.png" alt="Bad Wizard Games primary logo on a dark background"></div>
+            <div class="card-info"><div><h3>Dark field</h3><p>Full color · Dark backgrounds</p></div><a class="button small" href="assets/logo_switched.png" download>PNG ↓</a></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="colors">
+      <div class="wrap">
+        <div class="section-head"><div class="eyebrow">02 · Color</div><div><h2>A little magic. A lot of contrast.</h2><p class="muted">Obsidian anchors the system. Arcane Violet and Spark Amber carry the energy; Chaos Coral is reserved for decisive moments.</p></div></div>
+        <div class="colors" aria-label="Brand color palette">
+          <button class="swatch ink" data-copy="#101117"><strong>Obsidian</strong><span>#101117</span></button>
+          <button class="swatch violet" data-copy="#8E6BFF"><strong>Arcane Violet</strong><span>#8E6BFF</span></button>
+          <button class="swatch amber" data-copy="#FFB84D"><strong>Spark Amber</strong><span>#FFB84D</span></button>
+          <button class="swatch coral" data-copy="#FF6B4A"><strong>Chaos Coral</strong><span>#FF6B4A</span></button>
+          <button class="swatch cream" data-copy="#EBE4D6"><strong>Parchment</strong><span>#EBE4D6</span></button>
+        </div>
+      </div>
+    </section>
+
+    <section id="type">
+      <div class="wrap">
+        <div class="section-head"><div class="eyebrow">03 · Typography</div><div><h2>Smart, sharp, and never stuffy.</h2><p class="muted">Our type system pairs a characterful geometric display face with a highly readable everyday sans serif.</p></div></div>
+        <div class="grid two">
+          <article class="card type-card"><div class="sample">Aa</div><div class="type-meta"><div><h3>Space Grotesk</h3><p class="muted">Headlines · Bold / Semibold</p></div><span class="eyebrow">Display</span></div></article>
+          <article class="card type-card body"><div class="sample">Clever games for curious people.</div><div class="type-meta"><div><h3>DM Sans</h3><p class="muted">Body · Regular / Medium / Bold</p></div><span class="eyebrow">Text</span></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="imagery">
+      <div class="wrap">
+        <div class="section-head"><div class="eyebrow">04 · Imagery</div><div><h2>Build worlds at first glance.</h2><p class="muted">Choose cinematic, high-contrast imagery with enough negative space for a strong message. Let the strange detail do the talking.</p></div></div>
+        <div class="grid three">
+          <article class="card image-card"><img src="assets/banner.jpg" alt="Bad Wizard Games campaign artwork"><div class="image-label"><h3>Hero campaign</h3><span>16:9 · JPG</span></div></article>
+          <article class="card image-card"><img src="assets/ads/port.jpg" alt="Bad Wizard Games art portrait"><div class="image-label"><h3>Art & experience</h3><span>Portrait · JPEG</span></div></article>
+          <article class="card image-card"><img src="assets/ads/game_design.png" alt="Bad Wizard Games systems designer portrait"><div class="image-label"><h3>Game systems</h3><span>Portrait · PNG</span></div></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="documents">
+      <div class="wrap">
+        <div class="section-head"><div class="eyebrow">05 · Sales materials</div><div><h2>Ready for the next conversation.</h2><p class="muted">Current product materials for buyer meetings, retail outreach, and partner presentations.</p></div></div>
+        <article class="card doc-card">
+          <div class="doc-icon">PDF</div><div><h3>2026 Product Catalog · Wave 1</h3><p class="muted">Approved assortment and business overview</p></div>
+          <a class="button" href="assets/catalog/BadWizard_Catalog_2026_Wave_1.pdf" download>Download catalog ↓</a>
+        </article>
+      </div>
+    </section>
+
+    <section id="guidance">
+      <div class="wrap">
+        <div class="section-head"><div class="eyebrow">06 · Usage</div><div><h2>Keep the magic intact.</h2><p class="muted">A few simple rules help every appearance feel unmistakably Bad Wizard.</p></div></div>
+        <div class="rules">
+          <article class="card rule"><div class="rule-head"><span class="mark do">✓</span><h3>Give it breathing room</h3></div><p>Keep clear space around the logo equal to at least one quarter of the mark’s width.</p></article>
+          <article class="card rule"><div class="rule-head"><span class="mark do">✓</span><h3>Favor strong contrast</h3></div><p>Place the mark on solid or visually quiet backgrounds where every detail remains clear.</p></article>
+          <article class="card rule"><div class="rule-head"><span class="mark dont">×</span><h3>Don’t redraw or distort</h3></div><p>Never stretch, rotate, recolor, outline, or rebuild the logo from separate elements.</p></article>
+          <article class="card rule"><div class="rule-head"><span class="mark dont">×</span><h3>Don’t add effects</h3></div><p>Avoid unapproved gradients, glows, shadows, bevels, and other decorative treatments.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="wrap">
+        <div class="contact">
+          <div><div class="eyebrow">Need something specific?</div><h2>Let’s make your use of the brand brilliant.</h2></div>
+          <a class="button" href="mailto:hello@badwizardgames.com?subject=Brand%20asset%20request">Contact the brand team ↗</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="wrap footer"><span>© 2026 Bad Wizard Games</span><span>Official brand assets · Edition 01</span></div></footer>
+  <div class="toast" role="status" aria-live="polite">Color copied</div>
+  <script>
+    const toast = document.querySelector('.toast');
+    document.querySelectorAll('[data-copy]').forEach((swatch) => {
+      swatch.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(swatch.dataset.copy);
+          toast.textContent = `${swatch.dataset.copy} copied`;
+          toast.classList.add('show');
+          window.setTimeout(() => toast.classList.remove('show'), 1500);
+        } catch (_) {
+          toast.textContent = swatch.dataset.copy;
+          toast.classList.add('show');
+        }
+      });
+    });
+  </script>
+</body>
+</html>
