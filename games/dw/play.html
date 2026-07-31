@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Double Wide: Holier-Than-Thou | Bad Wizard Games</title>
+<style>
+:root{
+  --ink:#09090b;
+  --coal:#111116;
+  --panel:#191820;
+  --panel-2:#211e29;
+  --cream:#f4ead7;
+  --muted:#c8baa7;
+  --blood:#b5222d;
+  --blood-bright:#e23d49;
+  --ember:#ef8f2f;
+  --gold:#f2c14e;
+  --violet:#6d3aa8;
+  --acid:#a7c957;
+  --line:rgba(244,234,215,.14);
+  --shadow:0 18px 50px rgba(0,0,0,.42);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--ink)}
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:
+    radial-gradient(circle at 15% 10%,rgba(109,58,168,.16),transparent 30%),
+    radial-gradient(circle at 85% 20%,rgba(181,34,45,.15),transparent 34%),
+    linear-gradient(180deg,var(--coal),var(--ink));
+  color:var(--cream);
+  line-height:1.65;
+  overflow-x:hidden;
+}
+
+body.game-locked{overflow:hidden}
+
+a{color:inherit}
+img{max-width:100%}
+
+.site-header{
+  position:fixed;
+  inset:0 0 auto;
+  z-index:50;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  padding:14px 6%;
+  background:rgba(9,9,11,.78);
+  border-bottom:1px solid var(--line);
+  backdrop-filter:blur(14px);
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:14px;
+  text-decoration:none;
+}
+.brand-text{
+  display:flex;
+  flex-direction:column;
+  line-height:1;
+}
+.brand-top{
+  font-size:1.15rem;
+  font-weight:900;
+  letter-spacing:.22em;
+  color:var(--gold);
+  text-transform:uppercase;
+}
+.brand-bottom{
+  margin-top:2px;
+  font-size:.72rem;
+  font-weight:700;
+  letter-spacing:.45em;
+  color:var(--muted);
+  text-transform:uppercase;
+}
+.header-logo{
+  width:54px;
+  height:54px;
+  object-fit:cover;
+  border-radius:14px; /* Rounded corners */
+  border:2px solid rgba(242,193,78,.35);
+  box-shadow:
+    0 6px 16px rgba(0,0,0,.45),
+    inset 0 0 0 1px rgba(255,255,255,.08);
+  transition:.25s ease;
+}
+.header-logo:hover{
+  transform:scale(1.08) rotate(-3deg);
+}
+
+.site-header nav{display:flex;gap:10px;flex-wrap:wrap}
+.site-header nav a{
+  text-decoration:none;
+  color:var(--muted);
+  font-weight:700;
+  font-size:.9rem;
+  padding:8px 12px;
+  border-radius:999px;
+}
+.site-header nav a:hover{background:rgba(255,255,255,.07);color:var(--cream)}
+
+.hero{
+  min-height:100vh;
+  display:grid;
+  place-items:center;
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  padding:120px 8% 80px;
+  text-align:center;
+  background:
+    linear-gradient(rgba(7,7,10,.32),rgba(7,7,10,.9)),
+    radial-gradient(circle at 50% 20%,rgba(239,143,47,.22),transparent 38%),
+    linear-gradient(135deg,#29152f 0%,#251718 48%,#0c0c10 100%);
+}
+
+.hero::before{
+  content:"";
+  position:absolute;
+  inset:-20%;
+  z-index:-2;
+  background:
+    repeating-linear-gradient(115deg,transparent 0 38px,rgba(255,255,255,.025) 39px 41px),
+    radial-gradient(circle,rgba(242,193,78,.5) 0 1px,transparent 2px);
+  background-size:auto,32px 32px;
+  opacity:.3;
+  transform:rotate(-3deg);
+}
+
+.hero::after{
+  content:"";
+  position:absolute;
+  inset:auto -10% 0;
+  height:35%;
+  z-index:-1;
+  background:
+    linear-gradient(180deg,transparent,rgba(0,0,0,.6)),
+    repeating-linear-gradient(90deg,#191820 0 90px,#111116 90px 170px);
+  clip-path:polygon(0 55%,9% 47%,18% 58%,29% 34%,40% 55%,50% 39%,61% 60%,73% 37%,84% 53%,100% 36%,100% 100%,0 100%);
+  opacity:.78;
+}
+
+.eyebrow{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 14px;
+  border:1px solid rgba(242,193,78,.35);
+  background:rgba(0,0,0,.35);
+  color:var(--gold);
+  border-radius:999px;
+  font-weight:900;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  font-size:.78rem;
+}
+
+h1,h2,h3{line-height:1.08}
+h1{
+  margin:22px 0 18px;
+  font-size:clamp(3.2rem,9vw,7.5rem);
+  letter-spacing:-.05em;
+  text-transform:uppercase;
+  text-shadow:5px 5px 0 rgba(181,34,45,.75),10px 10px 0 rgba(0,0,0,.28);
+}
+
+h1 span{
+  display:block;
+  color:var(--gold);
+  font-size:.43em;
+  letter-spacing:.03em;
+  margin-top:.2em;
+}
+
+.hero p{
+  max-width:860px;
+  margin:0 auto 28px;
+  color:var(--muted);
+  font-size:clamp(1rem,2vw,1.3rem);
+}
+
+.actions{display:flex;justify-content:center;gap:14px;flex-wrap:wrap}
+
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  min-height:48px;
+  padding:13px 24px;
+  border:1px solid transparent;
+  border-radius:8px;
+  background:linear-gradient(135deg,var(--blood-bright),var(--blood));
+  color:white;
+  text-decoration:none;
+  font-weight:900;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+  box-shadow:0 10px 30px rgba(181,34,45,.28);
+  transition:.2s ease;
+  cursor:pointer;
+}
+
+.btn:hover{transform:translateY(-2px);filter:brightness(1.08)}
+.btn.secondary{
+  background:rgba(255,255,255,.05);
+  border-color:rgba(242,193,78,.35);
+  color:var(--gold);
+  box-shadow:none;
+}
+
+main section{padding:86px 8%}
+.section-inner{width:min(1180px,100%);margin:auto}
+.section-kicker{
+  margin:0 0 8px;
+  color:var(--ember);
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.15em;
+  font-size:.78rem;
+}
+h2{
+  margin:0 0 22px;
+  font-size:clamp(2rem,5vw,4rem);
+  text-transform:uppercase;
+}
+.lead{max-width:860px;color:var(--muted);font-size:1.12rem}
+
+.alt{
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.005)),
+    repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,255,255,.012) 4px);
+  border-block:1px solid var(--line);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:18px;
+  margin-top:30px;
+}
+
+.card{
+  background:linear-gradient(180deg,var(--panel-2),var(--panel));
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:24px;
+  box-shadow:var(--shadow);
+  position:relative;
+  overflow:hidden;
+}
+
+.card::before{
+  content:"";
+  position:absolute;
+  inset:0 auto 0 0;
+  width:4px;
+  background:linear-gradient(var(--gold),var(--blood-bright));
+}
+
+.card h3{margin:0 0 10px;color:var(--gold);font-size:1.25rem}
+.card p{margin:0;color:var(--muted)}
+
+.rules{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+  gap:16px;
+  margin-top:28px;
+}
+.rule{
+  display:flex;
+  gap:14px;
+  align-items:flex-start;
+  padding:18px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.025);
+  border-radius:12px;
+}
+.rule strong{color:var(--gold)}
+.rule.danger{border-color:rgba(226,61,73,.35);background:rgba(181,34,45,.08)}
+.rule-icon{font-size:1.35rem}
+
+.game-shell{
+  margin-top:28px;
+  border:1px solid rgba(242,193,78,.3);
+  background:#050506;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 24px 70px rgba(0,0,0,.58);
+}
+
+.game-toolbar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:16px;
+  flex-wrap:wrap;
+  padding:12px 14px;
+  background:linear-gradient(90deg,#17141d,#221821);
+  border-bottom:1px solid var(--line);
+}
+.game-toolbar p{margin:0;color:var(--muted);font-size:.92rem}
+.control-buttons{display:flex;gap:8px;flex-wrap:wrap}
+.control-button{
+  border:1px solid var(--line);
+  background:#26212c;
+  color:var(--cream);
+  padding:9px 13px;
+  border-radius:7px;
+  font-weight:800;
+  cursor:pointer;
+}
+.control-button:hover{background:#342b3c}
+.control-button.active{background:var(--blood);border-color:var(--blood-bright)}
+
+.game-frame-wrap{position:relative}
+iframe{
+  display:block;
+  width:100%;
+  height:min(78vh,760px);
+  min-height:560px;
+  border:0;
+  background:#000;
+}
+
+.focus-note{
+  position:absolute;
+  right:14px;
+  bottom:14px;
+  z-index:4;
+  padding:9px 12px;
+  border-radius:8px;
+  background:rgba(9,9,11,.86);
+  border:1px solid rgba(242,193,78,.3);
+  color:var(--gold);
+  font-size:.82rem;
+  pointer-events:none;
+  transition:.2s;
+}
+.game-shell.locked .focus-note{opacity:0}
+
+.game-warning{
+  margin-top:14px;
+  color:var(--muted);
+  font-size:.92rem;
+}
+.game-warning strong{color:var(--gold)}
+
+.character h3{font-size:1.4rem}
+.character .role{
+  display:inline-block;
+  margin-bottom:12px;
+  color:var(--ember);
+  font-size:.78rem;
+  font-weight:900;
+  letter-spacing:.11em;
+  text-transform:uppercase;
+}
+
+footer{
+  padding:70px 8%;
+  text-align:center;
+  background:
+    linear-gradient(rgba(0,0,0,.75),rgba(0,0,0,.88)),
+    radial-gradient(circle at center,rgba(109,58,168,.28),transparent 48%);
+  border-top:1px solid var(--line);
+}
+footer p{color:var(--muted)}
+.footer-brand{color:var(--gold);font-weight:900;letter-spacing:.14em;text-transform:uppercase}
+
+
+/* Animated beat-up pickup truck */
+.beater-truck{
+  position:absolute;
+  left:-360px;
+  bottom:3.5%;
+  width:300px;
+  height:130px;
+  z-index:1;
+  pointer-events:none;
+  animation:truck-drive 19s linear infinite;
+  filter:drop-shadow(0 12px 12px rgba(0,0,0,.45));
+}
+
+.beater-truck__bounce{
+  position:relative;
+  width:100%;
+  height:100%;
+  animation:truck-bounce .42s ease-in-out infinite alternate;
+}
+
+.beater-truck__bed{
+  position:absolute;
+  left:8px;
+  top:47px;
+  width:118px;
+  height:48px;
+  background:linear-gradient(180deg,#765f49,#4a392c);
+  border:4px solid #261c16;
+  border-radius:7px 5px 10px 11px;
+  transform:skewX(-4deg);
+  box-shadow:
+    inset 0 -9px 0 rgba(0,0,0,.22),
+    inset 18px 0 0 rgba(181,34,45,.15);
+}
+
+.beater-truck__bed::before{
+  content:"";
+  position:absolute;
+  width:49px;
+  height:8px;
+  left:17px;
+  top:10px;
+  background:#2e261f;
+  border:3px solid #15110e;
+  border-radius:50%;
+  transform:rotate(-8deg);
+}
+
+.beater-truck__bed::after{
+  content:"";
+  position:absolute;
+  right:12px;
+  top:-18px;
+  width:27px;
+  height:28px;
+  background:#9a3b2d;
+  border:3px solid #261c16;
+  border-radius:4px;
+  transform:rotate(8deg);
+}
+
+.beater-truck__cab{
+  position:absolute;
+  left:115px;
+  top:22px;
+  width:118px;
+  height:75px;
+  background:linear-gradient(140deg,#9b6446 0 55%,#6f4533 56% 100%);
+  border:4px solid #261c16;
+  border-radius:34px 18px 8px 7px;
+  transform:skewX(-4deg);
+  box-shadow:
+    inset -10px -10px 0 rgba(0,0,0,.16),
+    inset 13px 9px 0 rgba(255,255,255,.035);
+}
+
+.beater-truck__cab::before{
+  content:"";
+  position:absolute;
+  left:23px;
+  top:9px;
+  width:47px;
+  height:29px;
+  background:linear-gradient(145deg,#53616c,#1e2730);
+  border:3px solid #211914;
+  border-radius:18px 6px 4px 4px;
+  clip-path:polygon(20% 0,100% 0,90% 100%,0 100%);
+  box-shadow:inset 10px 0 0 rgba(255,255,255,.06);
+}
+
+.beater-truck__cab::after{
+  content:"";
+  position:absolute;
+  right:11px;
+  bottom:13px;
+  width:24px;
+  height:13px;
+  background:#c98f45;
+  border:3px solid #261c16;
+  border-radius:50% 8px 8px 50%;
+  animation:headlight-flicker 2.4s infinite;
+}
+
+.beater-truck__hood{
+  position:absolute;
+  left:220px;
+  top:56px;
+  width:67px;
+  height:39px;
+  background:linear-gradient(180deg,#86553d,#5a3729);
+  border:4px solid #261c16;
+  border-left-width:2px;
+  border-radius:5px 14px 13px 4px;
+  transform:skewX(-5deg) rotate(1deg);
+}
+
+.beater-truck__hood::before{
+  content:"";
+  position:absolute;
+  left:9px;
+  top:9px;
+  width:26px;
+  height:7px;
+  border-top:3px solid rgba(30,20,15,.8);
+  transform:rotate(-5deg);
+}
+
+.beater-truck__bumper{
+  position:absolute;
+  left:276px;
+  top:84px;
+  width:26px;
+  height:12px;
+  background:#6d6d6d;
+  border:3px solid #262626;
+  border-radius:2px 8px 8px 2px;
+  transform:rotate(4deg);
+}
+
+.beater-truck__door{
+  position:absolute;
+  left:144px;
+  top:57px;
+  width:52px;
+  height:37px;
+  border:3px solid rgba(38,28,22,.85);
+  border-radius:4px;
+  transform:rotate(-1deg);
+}
+
+.beater-truck__door::before{
+  content:"";
+  position:absolute;
+  right:7px;
+  top:8px;
+  width:10px;
+  height:3px;
+  background:#2a211b;
+  border-radius:3px;
+}
+
+.beater-truck__door::after{
+  content:"";
+  position:absolute;
+  left:7px;
+  bottom:7px;
+  width:20px;
+  height:10px;
+  border:3px solid rgba(71,37,26,.65);
+  border-radius:45%;
+  transform:rotate(-12deg);
+}
+
+.beater-truck__wheel{
+  position:absolute;
+  top:83px;
+  width:48px;
+  height:48px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle,#a99c8a 0 16%,#3b342e 17% 32%,#0f0f10 33% 68%,#222 69% 100%);
+  border:4px solid #161315;
+  animation:wheel-spin .62s linear infinite;
+}
+
+.beater-truck__wheel--rear{left:45px}
+.beater-truck__wheel--front{left:225px}
+
+.beater-truck__rust{
+  position:absolute;
+  left:90px;
+  top:73px;
+  width:95px;
+  height:18px;
+  background:
+    radial-gradient(circle at 12% 40%,#8f2d1f 0 4px,transparent 5px),
+    radial-gradient(circle at 45% 70%,#9f3926 0 5px,transparent 6px),
+    radial-gradient(circle at 73% 25%,#7d241b 0 4px,transparent 5px),
+    radial-gradient(circle at 92% 65%,#aa4027 0 3px,transparent 4px);
+  opacity:.9;
+}
+
+.beater-truck__exhaust{
+  position:absolute;
+  left:-8px;
+  top:79px;
+  width:30px;
+  height:8px;
+  background:#302722;
+  border:3px solid #171310;
+  border-radius:8px 2px 2px 8px;
+}
+
+.smoke{
+  position:absolute;
+  left:-12px;
+  top:66px;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:rgba(170,170,170,.24);
+  animation:smoke-puff 2s ease-out infinite;
+}
+.smoke--2{animation-delay:.65s}
+.smoke--3{animation-delay:1.3s}
+
+@keyframes truck-drive{
+  from{transform:translateX(0)}
+  to{transform:translateX(calc(100vw + 700px))}
+}
+
+@keyframes truck-bounce{
+  from{transform:translateY(0) rotate(-.4deg)}
+  to{transform:translateY(-5px) rotate(.5deg)}
+}
+
+@keyframes wheel-spin{
+  to{transform:rotate(360deg)}
+}
+
+@keyframes headlight-flicker{
+  0%,17%,22%,31%,100%{opacity:1;box-shadow:0 0 10px rgba(242,193,78,.55)}
+  18%,21%,30%{opacity:.24;box-shadow:none}
+}
+
+@keyframes smoke-puff{
+  0%{transform:translate(0,0) scale(.45);opacity:0}
+  20%{opacity:.42}
+  100%{transform:translate(-58px,-32px) scale(2.2);opacity:0}
+}
+
+@media(max-width:700px){
+  .beater-truck{
+    width:220px;
+    height:100px;
+    bottom:2%;
+    transform-origin:left bottom;
+  }
+  .beater-truck__bounce{transform:scale(.74)}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .beater-truck,
+  .beater-truck__bounce,
+  .beater-truck__wheel,
+  .smoke,
+  .beater-truck__cab::after{
+    animation:none!important;
+  }
+  .beater-truck{left:5%;bottom:2%}
+}
+
+@media(max-width:700px){
+  .site-header{padding:12px 4%}
+  .site-header nav{display:none}
+  main section{padding:64px 6%}
+  iframe{height:68vh;min-height:480px}
+  h1{text-shadow:3px 3px 0 rgba(181,34,45,.75)}
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <a class="brand" href="../../index.html#games">
+    <img src="../../assets/logo_switched.png"
+         alt="Bad Wizard Games"
+         class="header-logo">
+
+    <span class="brand-text">
+        <span class="brand-top">BAD WIZARD</span>
+        <span class="brand-bottom">GAMES</span>
+    </span>
+  </a>
+  <nav aria-label="Page navigation">
+    <a href="#story">Story</a>
+    <a href="#gameplay">Gameplay</a>
+    <a href="#play">Play</a>
+    <a href="#characters">Characters</a>
+  </nav>
+</header>
+
+<section class="hero">
+
+  <div class="beater-truck" aria-hidden="true">
+    <div class="beater-truck__bounce">
+      <div class="smoke smoke--1"></div>
+      <div class="smoke smoke--2"></div>
+      <div class="smoke smoke--3"></div>
+      <div class="beater-truck__exhaust"></div>
+      <div class="beater-truck__bed"></div>
+      <div class="beater-truck__cab"></div>
+      <div class="beater-truck__hood"></div>
+      <div class="beater-truck__bumper"></div>
+      <div class="beater-truck__door"></div>
+      <div class="beater-truck__rust"></div>
+      <div class="beater-truck__wheel beater-truck__wheel--rear"></div>
+      <div class="beater-truck__wheel beater-truck__wheel--front"></div>
+    </div>
+  </div>
+  <div>
+    <div class="eyebrow">A Bad Wizard Games Adventure</div>
+    <h1>Double Wide <span>Holier-Than-Thou</span></h1>
+    <p><strong>Bobbi-Sue has one mission:</strong> convince T-Roy to attend Reverend Dolla Bill's church before Big-E catches up and collects the overdue back lot rent.</p>
+    <div class="actions">
+      <a class="btn" href="#play">Play the Game</a>
+      <a class="btn secondary" href="#gameplay">See How It Plays</a>
+    </div>
+  </div>
+</section>
+
+<main>
+<section id="story">
+  <div class="section-inner">
+    <p class="section-kicker">The Setup</p>
+    <h2>Welcome to Graceland Mobile Estates</h2>
+    <p class="lead">Life is never simple in Graceland Mobile Estates. Bobbi-Sue promised Reverend Dolla Bill that she would bring T-Roy to church, but T-Roy refuses to move until a collection of neighborhood problems has been solved.</p>
+    <p class="lead">Explore the park, question the neighbors, gather clues, and find the items needed to change T-Roy's mind—while staying one step ahead of Big-E and his demand for back lot rent.</p>
+  </div>
+</section>
+
+<section id="gameplay" class="alt">
+  <div class="section-inner">
+    <p class="section-kicker">The Game Loop</p>
+    <h2>Search. Talk. Collect. Run.</h2>
+    <div class="grid">
+      <article class="card"><h3>🗺 Explore the Park</h3><p>Search trailers, yards, paths, and back lots for useful objects and overlooked secrets.</p></article>
+      <article class="card"><h3>💬 Question the Neighbors</h3><p>Every resident knows part of the story. Conversations reveal clues and point Bobbi-Sue toward her next objective.</p></article>
+      <article class="card"><h3>🧰 Find the Required Items</h3><p>Track down the objects T-Roy demands before he will consider leaving the trailer and going to church.</p></article>
+      <article class="card"><h3>💵 Protect Your Cash</h3><p>Big-E takes <strong>$20</strong> every time he catches Bobbi-Sue. When her money reaches <strong>$0</strong>, the game is over.</p></article>
+      <article class="card"><h3>🏃 Avoid Big-E</h3><p>Watch his route, change direction quickly, and keep moving while you complete objectives around the neighborhood.</p></article>
+      <article class="card"><h3>⛪ Get T-Roy to Church</h3><p>Collect everything, finish the neighborhood errands, convince T-Roy, and complete Bobbi-Sue's promise to Reverend Dolla Bill.</p></article>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-inner">
+    <p class="section-kicker">Objectives</p>
+    <h2>How to Win—and How to Lose</h2>
+    <div class="rules">
+      <div class="rule"><span class="rule-icon">✔</span><div><strong>Gather the clues.</strong><br>Talk to the residents of Graceland Mobile Estates.</div></div>
+      <div class="rule"><span class="rule-icon">✔</span><div><strong>Find every quest item.</strong><br>Search the park and complete the required errands.</div></div>
+      <div class="rule"><span class="rule-icon">✔</span><div><strong>Convince T-Roy.</strong><br>Complete his demands and get him ready for church.</div></div>
+      <div class="rule danger"><span class="rule-icon">−$20</span><div><strong>Big-E catches Bobbi-Sue.</strong><br>Each encounter removes $20 from her available money.</div></div>
+      <div class="rule danger"><span class="rule-icon">$0</span><div><strong>Game over.</strong><br>When Bobbi-Sue runs out of money, the attempt is lost.</div></div>
+    </div>
+  </div>
+</section>
+
+<section id="play" class="alt">
+  <div class="section-inner">
+    <p class="section-kicker">Playable Online</p>
+    <h2>Play Double Wide: Holier-Than-Thou</h2>
+    <p class="lead">Lock the page while playing so the arrow keys control Bobbi-Sue instead of scrolling the website. Use the button again when you are ready to continue down the page.</p>
+
+    <div class="game-shell" id="gameShell">
+      <div class="game-toolbar">
+        <p id="controlStatus" aria-live="polite">Page scrolling is unlocked.</p>
+        <div class="control-buttons">
+          <button type="button" class="control-button" id="lockControls">Lock Game Controls</button>
+          <button type="button" class="control-button" id="unlockControls">Unlock Page</button>
+          <a class="control-button" target="_blank" rel="noopener" href="https://graceland-mobile-estates.replit.app">Open Fullscreen</a>
+        </div>
+      </div>
+
+      <div class="game-frame-wrap" id="gameFrameWrap">
+        <iframe
+          id="gameFrame"
+          src="https://graceland-mobile-estates.replit.app"
+          title="Double Wide: Holier-Than-Thou game"
+          tabindex="0"
+          allow="fullscreen">
+        </iframe>
+        <div class="focus-note">Click “Lock Game Controls” before using the arrow keys.</div>
+      </div>
+    </div>
+
+    <p class="game-warning"><strong>Important:</strong> Because the game is hosted on Replit inside a cross-origin iframe, the parent page cannot modify the game's internal keyboard code. Locking the page prevents the surrounding website from scrolling while you play.</p>
+  </div>
+</section>
+
+<section id="characters">
+  <div class="section-inner">
+    <p class="section-kicker">Meet the Residents</p>
+    <h2>Main Characters</h2>
+    <div class="grid">
+      <article class="card character"><span class="role">The Heroine</span><h3>Bobbi-Sue</h3><p>Determined to keep her promise, solve the neighborhood's problems, and get T-Roy through the church doors.</p></article>
+      <article class="card character"><span class="role">The Holdout</span><h3>T-Roy</h3><p>Perfectly comfortable at home and unwilling to leave until Bobbi-Sue finds everything he wants.</p></article>
+      <article class="card character"><span class="role">The Reverend</span><h3>Reverend Dolla Bill</h3><p>The energetic pastor counting on Bobbi-Sue to bring one more reluctant soul to Sunday service.</p></article>
+      <article class="card character"><span class="role">The Collector</span><h3>Big-E</h3><p>The relentless landlord hunting down unpaid back lot rent. Every encounter costs Bobbi-Sue another $20.</p></article>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <p class="footer-brand">Bad Wizard Games</p>
+  <h2>Can You Keep Bobbi-Sue One Step Ahead?</h2>
+  <p>Explore, solve the clues, avoid Big-E, and get T-Roy to church before the money runs out.</p>
+  <a class="btn" href="#play">Start Playing</a>
+</footer>
+
+<script>
+(() => {
+  const blockedKeys = new Set([
+    "ArrowUp",
+    "ArrowDown",
+    "ArrowLeft",
+    "ArrowRight",
+    " ",
+    "Spacebar"
+  ]);
+
+  const body = document.body;
+  const frame = document.getElementById("gameFrame");
+  const shell = document.getElementById("gameShell");
+  const lockButton = document.getElementById("lockControls");
+  const unlockButton = document.getElementById("unlockControls");
+  const status = document.getElementById("controlStatus");
+
+  let controlsLocked = false;
+
+  function setGameLock(locked) {
+    controlsLocked = locked;
+    body.classList.toggle("game-locked", locked);
+    shell.classList.toggle("locked", locked);
+    lockButton.classList.toggle("active", locked);
+    status.textContent = locked
+      ? "Game controls locked. Arrow-key page scrolling is disabled."
+      : "Page scrolling is unlocked.";
+
+    if (locked) {
+      frame.focus();
+    }
+  }
+
+  lockButton.addEventListener("click", () => setGameLock(true));
+  unlockButton.addEventListener("click", () => setGameLock(false));
+
+  document.addEventListener("keydown", event => {
+    if (controlsLocked && blockedKeys.has(event.key)) {
+      event.preventDefault();
+    }
+  }, { passive: false });
+
+  // Lock automatically when the pointer enters the game area and a mouse button is pressed.
+  frame.addEventListener("load", () => {
+    frame.setAttribute("aria-label", "Double Wide game loaded. Lock game controls before using arrow keys.");
+  });
+
+  window.addEventListener("blur", () => {
+    // Keep the page itself locked when focus moves into the cross-origin iframe.
+    if (controlsLocked) body.classList.add("game-locked");
+  });
+})();
+</script>
+</body>
+</html>
