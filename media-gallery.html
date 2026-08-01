@@ -4,18 +4,18 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="description" content="A curated gallery of Bad Wizard Games boxes, boards, cards, components, and gameplay.">
-  <meta name="theme-color" content="#120f18">
+  <meta name="theme-color" content="#0f1117">
   <title>The Game Cabinet — Bad Wizard Games</title>
   <link rel="icon" href="assets/logo.png">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=League+Spartan:wght@600;700;800&display=swap');
-    :root{--ink:#120f18;--paper:#eee6d7;--orange:#e7562f;--acid:#e9c64a;--violet:#7c5ce0;--line:rgba(238,230,215,.18);--muted:#a9a1ae;--display:"League Spartan",sans-serif;--body:"DM Sans",sans-serif}
+    :root{--ink:#0f1117;--panel:#151925;--paper:#e7e8ea;--orange:#ffb84d;--acid:#cfc1ff;--violet:#8e6bff;--line:rgba(255,255,255,.09);--muted:#a7adbb;--display:"League Spartan",sans-serif;--body:"DM Sans",sans-serif}
     *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--ink);color:var(--paper);font-family:var(--body);line-height:1.5;overflow-x:hidden}a{color:inherit}button{font:inherit}img{display:block;max-width:100%}
     .wrap{width:min(1240px,calc(100% - 40px));margin:auto}.eyebrow{font:700 12px var(--display);text-transform:uppercase;letter-spacing:.18em;color:var(--acid)}
-    header{position:fixed;inset:0 0 auto;z-index:30;background:linear-gradient(180deg,rgba(18,15,24,.95),rgba(18,15,24,.35),transparent)}
+    header{position:fixed;inset:0 0 auto;z-index:30;background:linear-gradient(180deg,rgba(15,17,23,.95),rgba(15,17,23,.35),transparent)}
     .nav{height:86px;display:flex;align-items:center;gap:16px}.brand{display:flex;align-items:center;gap:11px;text-decoration:none;font:800 15px var(--display);letter-spacing:.04em;text-transform:uppercase}.brand img{width:42px;height:42px;object-fit:contain;filter:invert(1)}.nav-links{margin-left:auto;display:flex;gap:24px;align-items:center}.nav-links a{text-decoration:none;font-size:13px;font-weight:700}
     .btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border:1px solid var(--paper);border-radius:999px;padding:11px 17px;background:var(--paper);color:var(--ink);font-weight:800;text-decoration:none;cursor:pointer;transition:.2s}.btn:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.28)}.btn.ghost{background:transparent;color:var(--paper);border-color:var(--line)}
-    .hero{min-height:94svh;position:relative;display:grid;align-items:end;padding:140px 0 74px;overflow:hidden;background:#19151e}
+    .hero{min-height:94svh;position:relative;display:grid;align-items:end;padding:140px 0 74px;overflow:hidden;background:#141821}
     .hero-bg{position:absolute;inset:0;display:grid;grid-template-columns:repeat(6,1fr);transform:rotate(-5deg) scale(1.17);opacity:.5;filter:saturate(.78)}
     .hero-bg img{height:115%;width:100%;object-fit:cover}.hero:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(18,15,24,.98) 0%,rgba(18,15,24,.76) 46%,rgba(18,15,24,.25)),linear-gradient(0deg,var(--ink),transparent 45%)}
     .hero-copy{position:relative;z-index:2;max-width:830px}h1,h2,h3{font-family:var(--display);text-transform:uppercase;letter-spacing:-.045em}h1{font-size:clamp(4rem,10vw,9.2rem);line-height:.78;margin:17px 0 28px}h1 span{color:var(--orange)}.hero p{max-width:620px;font-size:clamp(1rem,1.7vw,1.25rem);color:#d6d0d9}.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:30px}
@@ -31,6 +31,10 @@
     dialog{width:min(920px,calc(100% - 28px));padding:0;border:0;border-radius:20px;background:#1f1924;color:var(--paper);box-shadow:0 30px 80px #000b}dialog::backdrop{background:rgba(5,3,7,.84);backdrop-filter:blur(9px)}.lightbox{display:grid;grid-template-columns:1fr .42fr}.lightbox img{width:100%;max-height:82vh;object-fit:contain;background:#0b090d}.lightbox-copy{padding:30px}.lightbox-copy h3{font-size:32px;margin:10px 0}.close{position:absolute;right:12px;top:12px;width:38px;height:38px;border:0;border-radius:50%;background:var(--paper);font-size:20px;cursor:pointer}
     [hidden]{display:none!important}@media(max-width:900px){.hero-bg{grid-template-columns:repeat(3,1fr)}.hero-bg img:nth-child(n+4){display:none}.section-head,.tabletop{grid-template-columns:1fr}.products{grid-template-columns:1fr 1fr}.gallery .tile{grid-column:span 6}.cards{grid-template-columns:repeat(2,1fr)}.lightbox{grid-template-columns:1fr}.lightbox-copy{display:none}}
     @media(max-width:620px){.wrap{width:calc(100% - 24px)}.nav-links a:not(.btn){display:none}h1{font-size:4rem}.gallery{display:block}.tile{margin-bottom:14px;min-height:460px}.products{grid-template-columns:1fr}.box-stage{height:410px}.tabletop{border-radius:16px}.board,.component-panel{padding:28px}.board{min-height:440px}.cards{gap:10px}.footer{flex-direction:column}.ticker-track{animation-duration:15s}}
+    .hero:after{background:linear-gradient(90deg,rgba(15,17,23,.98) 0%,rgba(15,17,23,.76) 46%,rgba(15,17,23,.25)),linear-gradient(0deg,var(--ink),transparent 45%)}
+    .ticker{background:linear-gradient(90deg,var(--orange),var(--violet))}
+    .tile,.tabletop,dialog{background:var(--panel)}
+    .tabletop{border:1px solid var(--line)}
     @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
     .board-link {
       display: block;
