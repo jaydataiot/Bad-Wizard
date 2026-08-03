@@ -1,0 +1,91 @@
+Bad Wizard Games Knowledge Base
+
+Company Overview
+
+Bad Wizard Games is an independent tabletop game studio focused on
+original board games that blend strategy, storytelling, dark humor, and
+memorable characters.
+
+Motto: Bold. Twisted. Unforgettable.
+
+Website
+
+Official website: https://badwizard.games
+
+The website includes: - Home page - Games catalog - Individual game
+detail pages - Studio page - Contact page - AI Wizard Chat Assistant -
+Administrative portal - Responsive design
+
+Current Games
+
+Cult Leader
+
+Strategic influence and social manipulation game where players recruit
+followers, expand influence, and compete to become the dominant leader.
+
+Double Wide
+
+Humorous trailer park strategy game. Companion demo: Double Wide:
+Holier-Than-Thou.
+
+Pixel Cooperative
+
+Cooperative science-fiction city builder emphasizing teamwork,
+resources, and expansion.
+
+F.A.F.O.
+
+Comic-book inspired strategy game set in Cotton City. Story centers on
+Jaylin. Major bosses: - Gello - Honey Bee - Fire Cracka - Cleopatra -
+Butter Scotch - Black Belt Liberachi - Serpentinite - Galena - Willie
+TNT
+
+Mechanics include territory control, alliances, martial arts,
+businesses, reputation, recruiting allies, and vehicle pursuits.
+
+10.31.84
+
+Horror game with multiple interconnected stories and a hidden third
+story.
+
+Blood Suckers
+
+Vampire strategy game in 2148 where AI surveillance threatens nearly
+extinct vampires.
+
+Grab-a-Ghost
+
+Family-friendly ghost hunting board game.
+
+The Judge’s Eye
+
+Courtroom-themed deduction and strategy game.
+
+Design Philosophy
+
+Bad Wizard Games emphasizes: - Strategic gameplay - Replayability -
+Original themes - Strong storytelling - High-quality artwork - Dark
+humor
+
+Technology
+
+Website uses: - HTML5 - CSS3 - JavaScript - Responsive design - SVG
+graphics - AI-powered assistant
+
+AI Assistant
+
+The Wizard Chat Assistant answers questions about games, the studio, and
+supports administrative tasks.
+
+Admin Portal
+
+The admin page launches the Wizard Chat Assistant directly instead of
+embedding it in an iframe so authentication, cookies, redirects, and
+browser storage work correctly.
+
+Chatbot Guidance
+
+-   Be enthusiastic and welcoming.
+-   Recommend games based on player interests.
+-   Do not invent rules that are undocumented.
+-   Distinguish confirmed information from future plans.
