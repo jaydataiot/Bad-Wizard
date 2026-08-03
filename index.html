@@ -846,6 +846,144 @@ a, button, input, select, textarea, summary {
 }
 
 
+.announcement-list{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px}
+.announcement-card{padding:20px;border:1px solid var(--edge);border-radius:var(--radius);background:radial-gradient(120% 120% at 10% 10%,rgba(142,107,255,.14),transparent 42%),var(--panel);box-shadow:var(--shadow)}
+.announcement-card h3{font-size:1.3rem;margin:.7rem 0 .4rem}.announcement-card p{color:var(--muted);margin:.4rem 0 1rem}.announcement-meta{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--muted);font-size:.82rem}
+.game-pagination{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:24px}.game-page-status{min-width:11rem;text-align:center;color:var(--muted);font-size:.92rem}.game-empty{grid-column:1/-1;padding:24px;text-align:center;border:1px dashed var(--edge);border-radius:var(--radius);color:var(--muted)}
+.contact-app-shell{min-height:760px;padding:0;overflow:hidden}.contact-app-frame{display:block;width:100%;min-height:760px;border:0;background:var(--panel)}
+@media(max-width:960px){.announcement-list{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:700px){.announcement-list{grid-template-columns:1fr}.game-pagination{flex-wrap:wrap}.contact-app-shell,.contact-app-frame{min-height:880px}}
+
+.announcement-body {
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.announcement-body p {
+  margin: 0.5rem 0 1rem;
+}
+
+.announcement-body h4 {
+  margin: 1.7rem 0 0.65rem;
+  color: var(--text);
+  font-size: 1.12rem;
+}
+
+.announcement-body strong,
+.announcement-body em {
+  color: var(--text);
+}
+
+.announcement-body ul,
+.announcement-body ol {
+  margin: 0.75rem 0 1.25rem;
+  padding-left: 1.5rem;
+}
+
+.announcement-body li {
+  margin-bottom: 0.65rem;
+}
+
+.announcement-body blockquote {
+  margin: 1.25rem 0;
+  padding: 0.9rem 1rem;
+  border-left: 4px solid var(--accent, #8e6bff);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: rgba(142, 107, 255, 0.09);
+  color: var(--text);
+  font-style: italic;
+}
+
+.announcement-manifesto {
+  display: grid;
+  gap: 0.35rem;
+  margin: 1.2rem 0 1.6rem;
+  padding: 1rem;
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.announcement-manifesto span {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.announcement-signoff {
+  margin-top: 1.5rem !important;
+  padding-top: 1rem;
+  border-top: 1px solid var(--edge);
+}
+
+.announcement-body {
+  position: relative;
+  overflow: hidden;
+  color: var(--muted);
+  line-height: 1.7;
+  transition: max-height 0.35s ease;
+}
+
+.announcement-body.is-collapsed::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 90px;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--panel)
+  );
+}
+
+.announcement-card-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 1rem;
+}
+
+.announcement-toggle {
+  cursor: pointer;
+  font: inherit;
+}
+
+
+.announcement-body {
+  max-height: 320px;
+  overflow-y: auto;
+  padding-right: 10px;
+  color: var(--muted);
+  line-height: 1.7;
+  scrollbar-width: thin;
+  scrollbar-color: var(--edge) transparent;
+}
+
+.announcement-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.announcement-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.announcement-body::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: var(--edge);
+}
+.announcement-body.is-collapsed {
+  max-height: 240px;
+  overflow: hidden;
+}
+
+.announcement-body.is-expanded {
+  max-height: 520px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
 </style>
 </head>
 <body><div aria-hidden="true" class="wizard-story-layer">
@@ -893,6 +1031,9 @@ a, button, input, select, textarea, summary {
 <nav aria-label="Primary navigation" class="spacer">
 <a class="btn-outline" href="#games">
       Games
+     </a>
+<a class="btn-outline" href="#announcements">
+      News
      </a>
 <a class="btn-outline" href="#studio">
       Studio
@@ -942,6 +1083,16 @@ a, button, input, select, textarea, summary {
 <a class="btn-outline" href="#newsletter">
        Get Updates
       </a>
+</div>
+</div>
+</section>
+<section class="content" id="announcements">
+<div class="container">
+<div class="section-head">
+<div><h2>Announcements</h2><p class="lead">Studio news, playtest calls, releases, and appearances—loaded from a locally managed announcement file.</p></div>
+</div>
+<div class="announcement-list" id="announcementList" aria-live="polite">
+<p class="muted">Loading announcements…</p>
 </div>
 </div>
 </section>
@@ -1332,6 +1483,11 @@ a, button, input, select, textarea, summary {
 </div>
 </article>
 </div>
+<div class="game-pagination" id="gamePagination" aria-label="Game catalog pages">
+<button class="btn-outline" id="gamesPrevious" type="button">← Previous</button>
+<span class="game-page-status" id="gamePageStatus" aria-live="polite">Showing games</span>
+<button class="btn-outline" id="gamesNext" type="button">Next →</button>
+</div>
 </div>
 </section>
 <section class="content" id="studio">
@@ -1625,7 +1781,7 @@ Player count and playtime
  Prototype, PnP, simulator, or rules link
 </li>
 </ol>
-<a class="btn" href="mailto:hello@badwizard.games?subject=Pitch%20Submission">
+<a class="btn" href="email-form.html?recipient=hello%40badwizard.games&amp;topic=Collaboration%20%2F%20Pitch&amp;message=Pitch%20submission%3A%20">
         Email Pitch
        </a>
 </div>
@@ -1687,16 +1843,24 @@ Player count and playtime
 <p class="lead">
        Playtest invitations, print-and-play drops, production updates, and devlogs—without the spam.
       </p>
-<form action="https://formspree.io/f/your-form-id" class="newsletter-form" method="POST">
+<form action="https://wizard-chat-assistant.replit.app/api/contact" class="newsletter-form" id="newsletterForm" method="POST">
+<label class="hidden" for="news-name">
+        Name
+       </label>
+<input autocomplete="name" class="input" id="news-name" name="name" placeholder="Your name" required=""/>
 <label class="hidden" for="news-email">
         Email
        </label>
 <input class="input" id="news-email" name="email" placeholder="you@example.com" required="" type="email"/>
-<input name="source" type="hidden" value="bad-wizard-games-newsletter"/>
+<input name="recipient" type="hidden" value="newsletter@badwizard.games"/>
+<input name="topic" type="hidden" value="Other"/>
+<input name="message" type="hidden" value="Newsletter subscription request"/>
+<input name="subscribe" type="hidden" value="true"/>
 <button class="btn" type="submit">
         Subscribe
        </button>
 </form>
+<p class="muted" id="newsletterStatus" role="status" style="margin:.75rem 0 0"></p>
 </div>
 </div>
 </section>
@@ -1715,7 +1879,7 @@ Player count and playtime
 <div class="grid grid-2">
 <div>
 <div class="grid grid-2">
-<a class="card" href="mailto:hello@badwizard.games">
+<a class="card" href="email-form.html?recipient=hello%40badwizard.games&amp;topic=General%20Inquiry">
 <div class="media">
 <svg viewbox="0 0 640 360">
 <rect fill="#171722" height="360" width="640">
@@ -1737,7 +1901,7 @@ Player count and playtime
           </p>
 </div>
 </a>
-<a class="card" href="#press">
+<a class="card" href="email-form.html?recipient=hello%40badwizard.games&amp;topic=Press%20%2F%20Creator">
 <div class="media">
 <svg viewbox="0 0 640 360">
 <rect fill="#15151d" height="360" width="640">
@@ -1769,7 +1933,7 @@ Player count and playtime
           Missing pieces, rules questions, or print issues?
          </p>
 <p>
-<a href="mailto:support@badwizard.games">
+<a href="email-form.html?recipient=support%40badwizard.games&amp;topic=Support">
            support@badwizard.games
           </a>
 </p>
@@ -1782,69 +1946,16 @@ Player count and playtime
           Preview copies, point-of-sale assets, and learn-to-play events.
          </p>
 <p>
-<a href="mailto:sales@badwizard.games">
+<a href="email-form.html?recipient=sales%40badwizard.games&amp;topic=Retail%20%2F%20Wholesale">
            sales@badwizard.games
           </a>
 </p>
 </div>
 </div>
 </div>
-<div class="glass">
-<h3>
-        Send a Message
-       </h3>
-<form action="https://formspree.io/f/your-form-id" class="form" enctype="multipart/form-data" method="POST">
-<label for="name">
-         Name
-        </label>
-<input class="input" id="name" name="name" required=""/>
-<label for="contact-email">
-         Email
-        </label>
-<input class="input" id="contact-email" name="email" required="" type="email"/>
-<label for="topic">
-         Topic
-        </label>
-<select class="select" id="topic" name="topic">
-<option>
-          General Inquiry
-         </option>
-<option>
-          Collaboration / Pitch
-         </option>
-<option>
-          Press / Creator
-         </option>
-<option>
-          Retail / Wholesale
-         </option>
-<option>
-          Support
-         </option>
-<option>
-          Other
-         </option>
-</select>
-<label for="msg">
-         Message
-        </label>
-<textarea id="msg" name="message" placeholder="Tell us about your game, request, or question…" required=""></textarea>
-<label for="file">
-         Attachment (optional)
-        </label>
-<input class="input" id="file" name="file" type="file"/>
-<label style="display:flex;gap:.6rem;align-items:center">
-<input name="subscribe" type="checkbox"/>
-         Subscribe to the newsletter
-        </label>
-<input name="source" type="hidden" value="bad-wizard-games-contact"/>
-<button class="btn" type="submit">
-         Send Message
-        </button>
-<p class="muted" style="font-size:.9rem">
-         Replace the Formspree placeholder with your live form endpoint before publishing.
-        </p>
-</form>
+<div class="glass contact-app-shell">
+<iframe class="contact-app-frame" loading="lazy" src="email-form.html?recipient=contact%40badwizard.games&amp;topic=General%20Inquiry" title="Bad Wizard Games contact form"></iframe>
+<noscript><p style="padding:20px">JavaScript is required for the contact form. <a href="email-form.html?recipient=contact%40badwizard.games&amp;topic=General%20Inquiry">Open the contact form.</a></p></noscript>
 </div>
 </div>
 <div class="grid grid-2" style="margin-top:24px">
@@ -1866,7 +1977,7 @@ Player count and playtime
        </h3>
 <p class="muted">
         We aim for WCAG AA contrast, keyboard-friendly controls, and screen-reader-friendly structure. Report accessibility issues at
-        <a href="mailto:access@badwizard.games">
+        <a href="email-form.html?recipient=support%40badwizard.games&amp;topic=Support&amp;message=Accessibility%20issue%3A%20">
          access@badwizard.games
         </a>
         .
@@ -1910,6 +2021,8 @@ Player count and playtime
 </div>
 </div>
 </footer>
+<script src="data/announcements.js"></script>
+<script src="data/games.js"></script>
 <script>
    const root=document.documentElement,themeBtn=document.getElementById('themeBtn');
 const saved=localStorage.getItem('bwg-theme');
@@ -1917,11 +2030,12 @@ function setTheme(mode){root.classList.toggle('light',mode==='light');themeBtn.s
 setTheme(saved||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'));
 themeBtn.addEventListener('click',()=>setTheme(root.classList.contains('light')?'dark':'light'));
 document.getElementById('year').textContent=new Date().getFullYear();
-const q=document.getElementById('search'),sortSel=document.getElementById('sort'),chips=[...document.querySelectorAll('#genres .chip')],grid=document.getElementById('grid'),cards=[...grid.querySelectorAll('.game-card')];let activeGenre='all';
+const q=document.getElementById('search'),sortSel=document.getElementById('sort'),chips=[...document.querySelectorAll('#genres .chip')],grid=document.getElementById('grid'),cards=[...grid.querySelectorAll('.game-card')],previousGames=document.getElementById('gamesPrevious'),nextGames=document.getElementById('gamesNext'),gamePageStatus=document.getElementById('gamePageStatus');let activeGenre='all',currentGamePage=0;const gamesPerPage=6,featuredOrder=new Map(cards.map((card,index)=>[card,index]));
 function matches(card){if(activeGenre!=='all'&&!card.dataset.genre.toLowerCase().split(/\s+/).includes(activeGenre))return false;if(document.getElementById('pnp').checked&&card.dataset.pnp!=='true')return false;if(document.getElementById('proto').checked&&card.dataset.proto!=='true')return false;if(document.getElementById('inprint').checked&&card.dataset.inprint!=='true')return false;const term=q.value.trim().toLowerCase();return !term||(card.dataset.title+' '+card.dataset.genre+' '+card.dataset.tags).toLowerCase().includes(term)}
-function applySort(){const visible=cards.filter(c=>c.style.display!=='none');visible.sort((a,b)=>sortSel.value==='alpha'?a.dataset.title.localeCompare(b.dataset.title):sortSel.value==='time'?parseInt(a.dataset.time)-parseInt(b.dataset.time):sortSel.value==='players'?parseInt(b.dataset.players)-parseInt(a.dataset.players):0);visible.forEach(c=>grid.appendChild(c))}
-function applyFilters(){cards.forEach(c=>c.style.display=matches(c)?'':'none');applySort()}
-q.addEventListener('input',applyFilters);sortSel.addEventListener('change',applySort);['pnp','proto','inprint'].forEach(id=>document.getElementById(id).addEventListener('change',applyFilters));chips.forEach(ch=>ch.addEventListener('click',()=>{chips.forEach(x=>x.dataset.active='false');ch.dataset.active='true';activeGenre=ch.dataset.filter;applyFilters()}));applyFilters();
+function sortedMatches(){return cards.filter(matches).sort((a,b)=>sortSel.value==='alpha'?a.dataset.title.localeCompare(b.dataset.title):sortSel.value==='time'?parseInt(a.dataset.time)-parseInt(b.dataset.time):sortSel.value==='players'?parseInt(b.dataset.players)-parseInt(a.dataset.players):featuredOrder.get(a)-featuredOrder.get(b))}
+function applyFilters(){const results=sortedMatches(),pageCount=Math.max(1,Math.ceil(results.length/gamesPerPage));currentGamePage=Math.min(currentGamePage,pageCount-1);cards.forEach(card=>card.style.display='none');results.forEach(card=>grid.appendChild(card));results.slice(currentGamePage*gamesPerPage,(currentGamePage+1)*gamesPerPage).forEach(card=>card.style.display='');previousGames.disabled=currentGamePage===0;nextGames.disabled=currentGamePage>=pageCount-1;previousGames.hidden=results.length<=gamesPerPage;nextGames.hidden=results.length<=gamesPerPage;gamePageStatus.textContent=results.length?`Showing ${currentGamePage*gamesPerPage+1}–${Math.min((currentGamePage+1)*gamesPerPage,results.length)} of ${results.length} games`:'No games match those filters.'}
+function resetGamePage(){currentGamePage=0;applyFilters()}
+q.addEventListener('input',resetGamePage);sortSel.addEventListener('change',resetGamePage);['pnp','proto','inprint'].forEach(id=>document.getElementById(id).addEventListener('change',resetGamePage));chips.forEach(ch=>ch.addEventListener('click',()=>{chips.forEach(x=>x.dataset.active='false');ch.dataset.active='true';activeGenre=ch.dataset.filter;resetGamePage()}));previousGames.addEventListener('click',()=>{if(currentGamePage>0){currentGamePage--;applyFilters();grid.scrollIntoView({behavior:'smooth',block:'start'})}});nextGames.addEventListener('click',()=>{if((currentGamePage+1)*gamesPerPage<sortedMatches().length){currentGamePage++;applyFilters();grid.scrollIntoView({behavior:'smooth',block:'start'})}});applyFilters();
   
 
 
@@ -2387,6 +2501,13 @@ document.querySelectorAll(".btn, .btn-outline, .brand").forEach((element) => {
 })();
 
 
+</script>
+<script>
+  (()=>{
+    const form=document.getElementById('newsletterForm'),status=document.getElementById('newsletterStatus');
+    if(!form||!status)return;
+    form.addEventListener('submit',async event=>{event.preventDefault();const button=form.querySelector('button[type="submit"]');button.disabled=true;status.textContent='Subscribing…';try{const response=await fetch(form.action,{method:'POST',body:new FormData(form),credentials:'include'}),payload=await response.json().catch(()=>({}));if(!response.ok)throw new Error(payload.error||'Subscription could not be completed.');form.reset();status.textContent='You are subscribed. Welcome to the fellowship.'}catch(error){status.textContent=error.message||'The newsletter service is temporarily unavailable.'}finally{button.disabled=false}});
+  })();
 </script>
 </body>
 </html>
